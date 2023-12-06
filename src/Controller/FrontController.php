@@ -43,4 +43,10 @@ class FrontController extends AbstractController
     {
         return $this->render('front/pages/contact.html.twig');
     }
+
+    #[Route('/book-a-table', name: 'book-a-table', defaults: ['includeInWebsiteMenu' => false])]
+    public function bookTable(): Response
+    {
+        return $this->render('front/pages/book-a-table.html.twig');
+    }
 }
