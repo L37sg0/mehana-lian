@@ -42,6 +42,9 @@ class Block
     #[ORM\ManyToMany(targetEntity: Event::class, inversedBy: 'blocks')]
     private Collection $events;
 
+    #[ORM\ManyToMany(targetEntity: Page::class, mappedBy: 'blocks')]
+    private Collection $pages;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -51,6 +54,7 @@ class Block
         $this->profiles = new ArrayCollection();
         $this->menus = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->pages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -246,6 +250,33 @@ class Block
     public function removeEvent(Event $event): static
     {
         $this->events->removeElement($event);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Page>
+     */
+    public function getPages(): Collection
+    {
+        return $this->pages;
+    }
+
+    public function addPage(Page $page): static
+    {
+        if (!$this->pages->contains($page)) {
+            $this->pages->add($page);
+            $page->addBlock($this);
+        }
+
+        return $this;
+    }
+
+    public function removePage(Page $page): static
+    {
+        if ($this->pages->removeElement($page)) {
+            $page->removeBlock($this);
+        }
 
         return $this;
     }
