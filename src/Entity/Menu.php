@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\TextRepository;
+use App\Repository\MenuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TextRepository::class)]
-class Text
+#[ORM\Entity(repositoryClass: MenuRepository::class)]
+class Menu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,14 +18,18 @@ class Text
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $value = null;
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
 
-    #[ORM\ManyToMany(targetEntity: Block::class, mappedBy: 'texts')]
+    #[ORM\ManyToMany(targetEntity: Dish::class, inversedBy: 'menus')]
+    private Collection $dishes;
+
+    #[ORM\ManyToMany(targetEntity: Block::class, mappedBy: 'menus')]
     private Collection $blocks;
 
     public function __construct()
     {
+        $this->dishes = new ArrayCollection();
         $this->blocks = new ArrayCollection();
     }
 
@@ -47,14 +50,38 @@ class Text
         return $this;
     }
 
-    public function getValue(): ?string
+    public function getTitle(): ?string
     {
-        return $this->value;
+        return $this->title;
     }
 
-    public function setValue(string $value): static
+    public function setTitle(string $title): static
     {
-        $this->value = $value;
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dish>
+     */
+    public function getDishes(): Collection
+    {
+        return $this->dishes;
+    }
+
+    public function addDish(Dish $dish): static
+    {
+        if (!$this->dishes->contains($dish)) {
+            $this->dishes->add($dish);
+        }
+
+        return $this;
+    }
+
+    public function removeDish(Dish $dish): static
+    {
+        $this->dishes->removeElement($dish);
 
         return $this;
     }
@@ -71,7 +98,7 @@ class Text
     {
         if (!$this->blocks->contains($block)) {
             $this->blocks->add($block);
-            $block->addText($this);
+            $block->addMenu($this);
         }
 
         return $this;
@@ -80,7 +107,7 @@ class Text
     public function removeBlock(Block $block): static
     {
         if ($this->blocks->removeElement($block)) {
-            $block->removeText($this);
+            $block->removeMenu($this);
         }
 
         return $this;

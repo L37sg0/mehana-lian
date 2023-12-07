@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\TextRepository;
+use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TextRepository::class)]
-class Text
+#[ORM\Entity(repositoryClass: EventRepository::class)]
+class Event
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,12 +17,21 @@ class Text
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $value = null;
+    private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity: Block::class, mappedBy: 'texts')]
+    #[ORM\Column]
+    private ?float $price = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
+    #[ORM\ManyToMany(targetEntity: Block::class, mappedBy: 'events')]
     private Collection $blocks;
 
     public function __construct()
@@ -33,6 +42,18 @@ class Text
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     public function getSlug(): ?string
@@ -47,14 +68,38 @@ class Text
         return $this;
     }
 
-    public function getValue(): ?string
+    public function getDescription(): ?string
     {
-        return $this->value;
+        return $this->description;
     }
 
-    public function setValue(string $value): static
+    public function setDescription(string $description): static
     {
-        $this->value = $value;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): static
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
@@ -71,7 +116,7 @@ class Text
     {
         if (!$this->blocks->contains($block)) {
             $this->blocks->add($block);
-            $block->addText($this);
+            $block->addEvent($this);
         }
 
         return $this;
@@ -80,7 +125,7 @@ class Text
     public function removeBlock(Block $block): static
     {
         if ($this->blocks->removeElement($block)) {
-            $block->removeText($this);
+            $block->removeEvent($this);
         }
 
         return $this;
