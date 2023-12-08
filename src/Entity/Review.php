@@ -17,10 +17,7 @@ class Review
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $firstname = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $lastname = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
@@ -34,15 +31,27 @@ class Review
     #[ORM\Column]
     private ?bool $approved = null;
 
-    #[ORM\ManyToMany(targetEntity: Block::class, mappedBy: 'reviews')]
-    private Collection $blocks;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    public function __construct()
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function prePersist()
     {
-        $this->blocks = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -50,26 +59,14 @@ class Review
         return $this->id;
     }
 
-    public function getFirstname(): ?string
+    public function getName(): ?string
     {
-        return $this->firstname;
+        return $this->name;
     }
 
-    public function setFirstname(string $firstname): static
+    public function setName(string $name): static
     {
-        $this->firstname = $firstname;
-
-        return $this;
-    }
-
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    public function setLastname(string $lastname): static
-    {
-        $this->lastname = $lastname;
+        $this->name = $name;
 
         return $this;
     }
@@ -122,33 +119,6 @@ class Review
         return $this;
     }
 
-    /**
-     * @return Collection<int, Block>
-     */
-    public function getBlocks(): Collection
-    {
-        return $this->blocks;
-    }
-
-    public function addBlock(Block $block): static
-    {
-        if (!$this->blocks->contains($block)) {
-            $this->blocks->add($block);
-            $block->addReview($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBlock(Block $block): static
-    {
-        if ($this->blocks->removeElement($block)) {
-            $block->removeReview($this);
-        }
-
-        return $this;
-    }
-
     public function getImage(): ?string
     {
         return $this->image;
@@ -157,6 +127,30 @@ class Review
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -2,14 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Block;
-use App\Entity\Dish;
-use App\Entity\Event;
 use App\Entity\Image;
-use App\Entity\Menu;
-use App\Entity\Page;
-use App\Entity\Post;
-use App\Entity\Profile;
 use App\Entity\Review;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -24,7 +17,7 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $routeBuilder = $this->container->get(AdminUrlGenerator::class);
-        $url = $routeBuilder->setController(PageCrudController::class)->generateUrl();
+        $url = $routeBuilder->setController(ImageCrudController::class)->generateUrl();
 
         return $this->redirect($url);
     }
@@ -38,15 +31,7 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToRoute('Back to Website', 'fas fa-home', 'home');
-        yield MenuItem::linkToCrud('Pages', 'fas fa book', Page::class);
-        yield MenuItem::linkToCrud('Blocks', 'fas fa book', Block::class);
-        yield MenuItem::linkToCrud('Posts', 'fas fa book', Post::class);
         yield MenuItem::linkToCrud('Images', 'fas fa book', Image::class);
-        yield MenuItem::linkToCrud('Menus', 'fas fa book', Menu::class);
-        yield MenuItem::linkToCrud('Dishes', 'fas fa book', Dish::class);
-        yield MenuItem::linkToCrud('Events', 'fas fa book', Event::class);
-        yield MenuItem::linkToCrud('Profiles', 'fas fa book', Profile::class);
         yield MenuItem::linkToCrud('Reviews', 'fas fa book', Review::class);
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 }
