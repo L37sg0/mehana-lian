@@ -49,4 +49,10 @@ class FrontController extends AbstractController
     {
         return $this->render('front/pages/book-a-table.html.twig');
     }
+
+    #[Route('/leave-a-review', name: 'leave-a-review', defaults: ['includeInWebsiteMenu' => false])]
+    public function leaveReview(): Response
+    {
+        return $this->render('front/pages/leave-a-review.html.twig');
+    }
 }
