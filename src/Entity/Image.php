@@ -35,6 +35,7 @@ class Image
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->path = 'uploads/images/' . $this->filename;
     }
 
     #[ORM\PreUpdate]

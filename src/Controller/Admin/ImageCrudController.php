@@ -20,7 +20,11 @@ class ImageCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-//            ImageField::new('filename')->setUploadDir('/uploads/gallery'),
+            ImageField::new('filename')
+                ->setBasePath('uploads/images')
+                ->setUploadDir('public/uploads/images')
+                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+            ,
             TextField::new('alt'),
         ];
     }
