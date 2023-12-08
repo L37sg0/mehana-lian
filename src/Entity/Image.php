@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Image
 {
     #[ORM\Id]
@@ -40,6 +41,20 @@ class Image
     {
         $this->posts = new ArrayCollection();
         $this->blocks = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function prePersist()
+    {
+        $this->created = new \DateTimeImmutable();
+        $this->updated = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function preUpdate()
+    {
+        $this->updated = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
