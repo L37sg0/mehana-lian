@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Image;
 use App\Entity\Review;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -11,6 +12,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $this->loadReviews($manager);
+        $this->loadGalleryImages($manager);
 
         $manager->flush();
     }
@@ -26,8 +28,7 @@ class AppFixtures extends Fixture
                 suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.
                 Maecen aliquam, risus at semper.'
             )->setEmail('s.g@example-mail.com')
-            ->setFirstname('Saul')
-            ->setLastname('Goodman')
+            ->setName('Saul Goodman')
             ->setRating(5)->setImage('assets/img/testimonials/testimonials-1.jpg');
         $manager->persist($review1);
 
@@ -39,8 +40,7 @@ class AppFixtures extends Fixture
                 suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.
                 Maecen aliquam, risus at semper.'
             )->setEmail('s.w@example-mail.com')
-            ->setFirstname('Sarah')
-            ->setLastname('Willson')
+            ->setName('Sarah Willson')
             ->setRating(5)->setImage('assets/img/testimonials/testimonials-2.jpg');
         $manager->persist($review2);
 
@@ -52,8 +52,7 @@ class AppFixtures extends Fixture
                 suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.
                 Maecen aliquam, risus at semper.'
             )->setEmail('j.k@example-mail.com')
-            ->setFirstname('Jena')
-            ->setLastname('Karlis')
+            ->setName('Jena Karlis')
             ->setRating(5)->setImage('assets/img/testimonials/testimonials-3.jpg');
         $manager->persist($review3);
 
@@ -65,15 +64,20 @@ class AppFixtures extends Fixture
                 suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.
                 Maecen aliquam, risus at semper.'
             )->setEmail('j.w@example-mail.com')
-            ->setFirstname('John')
-            ->setLastname('Warson')
+            ->setName('John Warson')
             ->setRating(4)->setImage('assets/img/testimonials/testimonials-4.jpg');
         $manager->persist($review4);
     }
 
-    public function loadImages(ObjectManager $manager)
+    public function loadGalleryImages(ObjectManager $manager)
     {
-
+        for ($i = 1; $i < 9; $i++) {
+            $image = new Image();
+            $image
+                ->setAlt("gallery-$i")
+                ->setFilename("gallery-$i.jpg");
+            $manager->persist($image);
+        }
     }
 
     public function loadBookings()

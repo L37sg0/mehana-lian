@@ -2,16 +2,28 @@
 
 namespace App\Controller;
 
+use App\Repository\ImageRepository;
+use App\Repository\ReviewRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
+    public function __construct(
+        private ImageRepository $imageRepository,
+        private ReviewRepository $reviewRepository
+    ) {
+    }
+
     #[Route('/', name: 'home', defaults: ['includeInWebsiteMenu' => true])]
     public function index(): Response
     {
-        return $this->render('front/pages/home.html.twig');
+        $reviews = $this->reviewRepository->findAll();
+
+        return $this->render('front/pages/home.html.twig', [
+            'reviews' => $reviews
+        ]);
     }
 
     #[Route('/about', name: 'about', defaults: ['includeInWebsiteMenu' => true])]
@@ -35,7 +47,10 @@ class FrontController extends AbstractController
     #[Route('/gallery', name: 'gallery', defaults: ['includeInWebsiteMenu' => true])]
     public function gallery(): Response
     {
-        return $this->render('front/pages/gallery.html.twig');
+        $images = $this->imageRepository->findAll();
+        return $this->render('front/pages/gallery.html.twig',[
+            'images' => $images
+        ]);
     }
 
     #[Route('/contact', name: 'contact', defaults: ['includeInWebsiteMenu' => true])]
