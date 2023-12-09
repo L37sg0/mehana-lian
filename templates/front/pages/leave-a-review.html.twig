@@ -9,71 +9,48 @@
         <div class="container" data-aos="fade-up">
 
             <div class="section-header">
-                <h2>Leave a Review</h2>
-                <p>Rate <span>Your Stay</span> With Us</p>
+                <h2>Reviews</h2>
+                <p>What <span>They Say</span> About Us</p>
             </div>
 
             <div class="row g-0">
 
-                <div class="col-lg-4 reservation-img" style="background-image: url(assets/img/reservation.jpg);"
-                     data-aos="zoom-out" data-aos-delay="200"></div>
+                <div class="col-lg-12 review-list">
+                    {% for review in reviews %}
+                        {% if review.isApproved %}
+                            <div class="testimonial-item">
+                                    <div class="row gy-4 justify-content-center">
+                                        <div class="col-lg-6">
+                                            <div class="testimonial-content">
+                                                <h3>{{ review.name() }}</h3>
+                                                <div class="stars">
+                                                    {% for i in 1..5 %}
+                                                        {% set starClass = (review.rating >= i ? "bi bi-star-fill" : "bi bi-star") %}
+                                                        <i class="{{ starClass }}"></i>
+                                                    {% endfor %}
+                                                </div>
+                                                <p>
+                                                    <i class="bi bi-quote quote-icon-left"></i>
+                                                    {{ review.content() }}
+                                                    <i class="bi bi-quote quote-icon-right"></i>
+                                                </p>
+                                            </div>
+                                        </div>
+{#                                        <div class="col-lg-2 text-center">#}
+{#                                            <img src="{{ review.image }}"#}
+{#                                                 class="img-fluid testimonial-img" alt="">#}
+{#                                        </div>#}
+                                    </div>
+                                </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
 
-                <div class="col-lg-8 d-flex align-items-center reservation-form-bg">
-                    <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form"
-                          data-aos="fade-up" data-aos-delay="100">
-                        <div class="row gy-4">
-                            <div class="col-lg-4 col-md-6">
-                                <input type="text" name="name" class="form-control" id="name" placeholder="Your Name"
-                                       data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-                                <div class="validate"></div>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <input type="email" class="form-control" name="email" id="email"
-                                       placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email">
-                                <div class="validate"></div>
-                            </div>
-<!--                            <div class="col-lg-4 col-md-6">
-                                <input type="text" class="form-control" name="phone" id="phone" placeholder="Your Phone"
-                                       data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-                                <div class="validate"></div>
-                            </div>-->
-<!--                            <div class="col-lg-4 col-md-6">
-                                <input type="text" name="date" class="form-control" id="date" placeholder="Date"
-                                       data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-                                <div class="validate"></div>
-                            </div>-->
-<!--                            <div class="col-lg-4 col-md-6">
-                                <input type="text" class="form-control" name="time" id="time" placeholder="Time"
-                                       data-rule="minlen:4" data-msg="Please enter at least 4 chars">
-                                <div class="validate"></div>
-                            </div>-->
-<!--                            <div class="col-lg-4 col-md-6">
-                                <input type="number" class="form-control" name="people" id="people"
-                                       placeholder="# of people" data-rule="minlen:1"
-                                       data-msg="Please enter at least 1 chars">
-                                <div class="validate"></div>
-                            </div>-->
-                            <div class="stars">
-                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                                        class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                                        class="bi bi-star-fill"></i>
-                            </div>
-                        </div>
-                        <div class="form-group mt-3">
-                            <textarea class="form-control" name="message" rows="5" placeholder="Message"></textarea>
-                            <div class="validate"></div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="loading">Loading</div>
-                            <div class="error-message"></div>
-                            <div class="sent-message">Your booking request was sent. We will call back or send an Email to confirm your reservation. Thank you!</div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit">Submit Review</button>
-                        </div>
-                    </form>
-                </div><!-- End Reservation Form -->
-
+                <div class="section-header">
+                    <p>Rate <span>Your Stay</span> With Us</p>
+                    <h2>Leave A Feedback</h2>
+                </div>
+                {% include 'front/forms/review-form.html.twig' %}
             </div>
 
         </div>

@@ -15,7 +15,7 @@ import AOS from './vendor/aos/aos.js';
 import GLightbox from './vendor/glightbox/js/glightbox.min.js';
 import PureCounter from './vendor/purecounter/purecounter_vanilla.js';
 import Swiper from './vendor/swiper/swiper-bundle.min.js';
-import './vendor/php-email-form/validate.js';
+// import './vendor/php-email-form/validate.js';
 /**
  * Template Name: Yummy
  * Updated: Sep 18 2023 with Bootstrap v5.3.2

@@ -2,15 +2,23 @@
 
 namespace App\Controller;
 
+use App\Entity\Review;
+use App\Form\ReviewType;
 use App\Repository\ImageRepository;
 use App\Repository\ReviewRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
     public function __construct(
+        private NotifierInterface $notifier,
+        private EntityManagerInterface $entityManager,
         private ImageRepository $imageRepository,
         private ReviewRepository $reviewRepository
     ) {
@@ -65,9 +73,38 @@ class FrontController extends AbstractController
         return $this->render('front/pages/book-a-table.html.twig');
     }
 
-    #[Route('/leave-a-review', name: 'leave-a-review', defaults: ['includeInWebsiteMenu' => false])]
-    public function leaveReview(): Response
-    {
-        return $this->render('front/pages/leave-a-review.html.twig');
+    #[Route('/reviews', name: 'reviews', defaults: ['includeInWebsiteMenu' => false])]
+    public function reviews(
+        Request $request,
+    ): Response {
+        $review = new Review();
+        $form = $this->createForm(ReviewType::class, $review);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $review
+                ->setApproved(0)
+                ->setImage('/assets/img/testimonials/testimonials-1.jpg');
+
+            $this->entityManager->persist($review);
+            $this->entityManager->flush();
+
+            $this->notifier->send(new Notification(
+                'Thank you for your feedback. Your review will be published after moderation.',
+                ['browser']
+            ));
+            return $this->redirectToRoute('home');
+        }
+
+        if ($form->isSubmitted()) {
+            $this->notifier->send(new Notification(
+                'Can you check your submission? There are some problems with it.',
+                ['browser']
+            ));
+        }
+
+        return $this->render('front/pages/leave-a-review.html.twig', [
+            'form' => $form,
+            'reviews'   => $this->reviewRepository->findAll(),
+        ]);
     }
 }
