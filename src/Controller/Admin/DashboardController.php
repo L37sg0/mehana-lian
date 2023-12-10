@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Image;
+use App\Entity\Message;
 use App\Entity\Review;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -31,7 +32,8 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToRoute('Back to Website', 'fas fa-home', 'home');
-        yield MenuItem::linkToCrud('Images', 'fas fa book', Image::class);
-        yield MenuItem::linkToCrud('Reviews', 'fas fa book', Review::class);
+        yield MenuItem::linkToCrud('Images', 'fas fa-images', Image::class);
+        yield MenuItem::linkToCrud('Reviews', 'fas fa-comments', Review::class);
+        yield MenuItem::linkToCrud('Messages', 'fas fa-message', Message::class);
     }
 }
