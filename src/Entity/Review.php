@@ -41,6 +41,9 @@ class Review
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column]
+    private ?bool $frontVisible = null;
+
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function prePersist()
@@ -152,6 +155,18 @@ class Review
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function isFrontVisible(): ?bool
+    {
+        return $this->frontVisible;
+    }
+
+    public function setFrontVisible(bool $frontVisible): static
+    {
+        $this->frontVisible = $frontVisible;
 
         return $this;
     }

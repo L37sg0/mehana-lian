@@ -40,7 +40,7 @@
                     <div class="swiper-wrapper">
 
                         {% for review in reviews %}
-                            {% if review.isApproved %}
+                            {% if review.isApproved and review.isFrontVisible %}
                             <div class="swiper-slide">
                                 <div class="testimonial-item">
                                     <div class="row gy-4 justify-content-center">
