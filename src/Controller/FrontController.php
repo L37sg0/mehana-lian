@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Message;
 use App\Entity\Review;
+use App\Form\MessageType;
 use App\Form\ReviewType;
 use App\Repository\ImageRepository;
 use App\Repository\ReviewRepository;
@@ -62,9 +64,37 @@ class FrontController extends AbstractController
     }
 
     #[Route('/contact', name: 'contact', defaults: ['includeInWebsiteMenu' => true])]
-    public function contact(): Response
+    public function contact(
+        Request $request,
+    ): Response
     {
-        return $this->render('front/pages/contact.html.twig');
+        $message = new Message();
+        $form = $this->createForm(MessageType::class, $message);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($message);
+            $this->entityManager->flush();
+
+            $this->notifier->send(new Notification(
+                'Thank you for your message. Our support will review your case and contact you back.',
+                ['browser']
+            ));
+
+            return $this->redirectToRoute('home');
+        }
+
+        if ($form->isSubmitted()) {
+            $this->notifier->send(new Notification(
+                'Can you check your submission? There are some problems with it.',
+                ['browser']
+            ));
+        }
+
+
+        return $this->render('front/pages/contact.html.twig', [
+            'form' => $form,
+        ]);
     }
 
     #[Route('/book-a-table', name: 'book-a-table', defaults: ['includeInWebsiteMenu' => false])]
