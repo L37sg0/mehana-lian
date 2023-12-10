@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'images')]
 class Image
 {
     #[ORM\Id]
