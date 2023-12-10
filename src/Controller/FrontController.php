@@ -102,7 +102,7 @@ class FrontController extends AbstractController
             ));
         }
 
-        return $this->render('front/pages/leave-a-review.html.twig', [
+        return $this->render('front/pages/reviews.html.twig', [
             'form' => $form,
             'reviews'   => $this->reviewRepository->findAll(),
         ]);
