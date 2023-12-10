@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'reviews')]
 class Review
 {
     #[ORM\Id]

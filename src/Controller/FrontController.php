@@ -113,6 +113,7 @@ class FrontController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $review
                 ->setApproved(0)
+                ->setFrontVisible(0)
                 ->setImage('/assets/img/testimonials/testimonials-1.jpg');
 
             $this->entityManager->persist($review);
