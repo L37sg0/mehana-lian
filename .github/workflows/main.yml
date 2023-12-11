@@ -19,4 +19,9 @@ jobs:
           rm -rf mehana-lian &&
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian &&
           cp ./mehana-lian/.env.test ./mehana-lian/.env &&
-          docker-compose exec -T app composer -d mehana-lian install
+          docker-compose exec -T app composer -d mehana-lian install &&
+          docker-compose exec -T app npm install --prefix mehana-lian &&
+          docker-compose exec -T app npm run dev --prefix mehana-lian &&
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create &&
+          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate &&
+          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load
