@@ -17,5 +17,6 @@ jobs:
         run: |
           cd /home/dev/docker-lemp && 
           rm -rf mehana-lian &&
-          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian
+          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian &&
+          cp ./mehana-lian/.env-test ./mehana-lian/.env &&
           docker-compose exec -T app composer -d mehana-lian install
