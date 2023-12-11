@@ -8,8 +8,9 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    container: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+      - name: Check environment is running
+        run: docker-compose exec app php -v
