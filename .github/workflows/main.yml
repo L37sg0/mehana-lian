@@ -14,4 +14,4 @@ jobs:
 #        uses: actions/checkout@v2
       - name: Check environment is running
 #        run: docker-compose exec app php -v
-        run: cd /home/dev/docker-lemp && pwd
+        run: cd /home/dev/docker-lemp && docker-compose exec -T app php -v
