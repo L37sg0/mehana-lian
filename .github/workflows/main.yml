@@ -14,4 +14,8 @@ jobs:
 #        uses: actions/checkout@v2
       - name: Check environment is running
 #        run: docker-compose exec app php -v
-        run: cd /home/dev/docker-lemp && docker-compose exec -T app php -v
+        run: |
+          cd /home/dev/docker-lemp && 
+          rm -rf mehana-lian &&
+          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian
+          docker-compose exec -T app composer -d mehana-lian install
