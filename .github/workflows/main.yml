@@ -56,7 +56,7 @@ jobs:
     steps:
       - name: Run tests
         run: |
-          docker-compose exec app mehana-lian/bin/phpunit mehana-lian/tests/
+          docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
 #
 #  quality:
 #    runs-on: self-hosted
