@@ -27,11 +27,13 @@ jobs:
 
       - name: Database Setup
         run: |
+          cd /home/dev/docker-lemp &&
           docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists &&
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
       - name: Database Fixtures
         run: |
+          cd /home/dev/docker-lemp &&
           docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load
 
   build-front:
@@ -45,6 +47,7 @@ jobs:
 
       - name: NPM Build
         run: |
+          cd /home/dev/docker-lemp &&
           docker-compose exec -T app npm run dev --prefix mehana-lian      
 
   test:
@@ -53,6 +56,7 @@ jobs:
     steps:
       - name: Run tests
         run: |
+          cd /home/dev/docker-lemp &&
           docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
 ##
 #  quality:
