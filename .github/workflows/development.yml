@@ -13,7 +13,9 @@ jobs:
         run: |
           cd /home/dev/docker-lemp && 
           rm -rf mehana-lian &&
-          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian &&
+          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
+          cd mehana-lian &&
+          git checkout development &&
           cp ./mehana-lian/.env.test ./mehana-lian/.env
 
   build-back:
