@@ -16,10 +16,10 @@ jobs:
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
           cd mehana-lian &&
           git checkout development &&
-          cp ./mehana-lian/.env.test ./mehana-lian/.env
+          cp .env.test .env
 
   build-back:
-    runs-on: [php-test php-test-2]
+    runs-on: [php-test]
     needs: [fetch]
     steps:
       - name: Composer Install
@@ -39,7 +39,7 @@ jobs:
           docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load
 
   build-front:
-    runs-on: [php-test php-test-2]
+    runs-on: [php-test]
     needs: [fetch]
     steps:
       - name: NPM Install
@@ -53,7 +53,7 @@ jobs:
           docker-compose exec -T app npm run dev --prefix mehana-lian      
 
   test:
-    runs-on: [php-test php-test-2]
+    runs-on: [php-test]
     needs: [build-back]
     steps:
       - name: Run tests
@@ -62,5 +62,5 @@ jobs:
           docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
 ##
 #  quality:
-#    runs-on: [php-test php-test-2]]
+#    runs-on: [php-test]
 #
