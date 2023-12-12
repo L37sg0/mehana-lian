@@ -1,4 +1,4 @@
-name: PHP CI
+name: PHP CD
 
 on:
   push:
@@ -7,23 +7,23 @@ on:
 
 jobs:
   fetch:
-    runs-on: self-hosted
+    runs-on: [php-live]
     steps:
       - name: Clone Repository
         run: |
-          cd /home/dev/docker-lemp && 
-          rm -rf mehana-lian &&
-          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian &&
-          cp ./mehana-lian/.env.test ./mehana-lian/.env
+          cd /home/dev/docker-lemp/mehana-lian && 
+          git fetch &&
+          git pull
 
   build-back:
-    runs-on: self-hosted
+    runs-on: [php-live]
     needs: [fetch]
     steps:
       - name: Composer Install
         run: |
           cd /home/dev/docker-lemp &&
-          docker-compose exec -T app composer -d mehana-lian install
+          docker-compose exec -T app composer -d mehana-lian install &&
+          docker-compose exec -T app composer -d mehana-lian dumpautoload
 
       - name: Database Setup
         run: |
@@ -31,13 +31,8 @@ jobs:
           docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists &&
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
-      - name: Database Fixtures
-        run: |
-          cd /home/dev/docker-lemp &&
-          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load
-
   build-front:
-    runs-on: self-hosted
+    runs-on: [php-live]
     needs: [fetch]
     steps:
       - name: NPM Install
@@ -48,16 +43,4 @@ jobs:
       - name: NPM Build
         run: |
           cd /home/dev/docker-lemp &&
-          docker-compose exec -T app npm run dev --prefix mehana-lian      
-
-  test:
-    runs-on: self-hosted
-    needs: [build-back]
-    steps:
-      - name: Run tests
-        run: |
-          cd /home/dev/docker-lemp &&
-          docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
-##
-#  quality:
-#    runs-on: self-hosted
+          docker-compose exec -T app npm run dev --prefix mehana-lian
