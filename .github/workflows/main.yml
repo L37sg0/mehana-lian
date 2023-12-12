@@ -22,6 +22,7 @@ jobs:
     steps:
       - name: Composer Install
         run: |
+          cd /home/dev/docker-lemp &&
           docker-compose exec -T app composer -d mehana-lian install
 
       - name: Database Setup
