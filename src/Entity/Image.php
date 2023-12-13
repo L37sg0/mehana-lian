@@ -32,7 +32,7 @@ class Image
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
@@ -40,7 +40,7 @@ class Image
     }
 
     #[ORM\PreUpdate]
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }

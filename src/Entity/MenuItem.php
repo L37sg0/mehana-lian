@@ -17,7 +17,9 @@ class MenuItem
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    /**
+     * @var Collection<int, Menu>|ArrayCollection
+     */
     #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'menuItems')]
     private Collection $menuId;
 
@@ -46,14 +48,14 @@ class MenuItem
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }

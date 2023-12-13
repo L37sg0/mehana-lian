@@ -21,6 +21,9 @@ class WebsiteMenuEventSubscriber implements EventSubscriberInterface
         $this->twig->addGlobal('websiteMenuItems', $this->getWebsiteMenuItems());
     }
 
+    /**
+     * @return string[]
+     */
     public function getWebsiteMenuItems(): array
     {
         $websiteMenuItems = [];

@@ -84,7 +84,7 @@ class AppFixtures extends Fixture
         $manager->persist($review4);
     }
 
-    public function loadGalleryImages(ObjectManager $manager)
+    public function loadGalleryImages(ObjectManager $manager): void
     {
         for ($i = 1; $i < 9; $i++) {
             $image = new Image();
@@ -95,7 +95,7 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function loadMessages(ObjectManager $manager)
+    public function loadMessages(ObjectManager $manager): void
     {
         for ($i = 0; $i <= 10; $i++) {
             $firstname = $this->faker->firstName;
@@ -116,7 +116,7 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function loadBookings()
+    public function loadBookings(): void
     {
         
     }
