@@ -2,39 +2,38 @@
 
 namespace App\Entity;
 
-use App\Repository\ReviewRepository;
+use App\Repository\MenuItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ReviewRepository::class)]
+#[ORM\Entity(repositoryClass: MenuItemRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'reviews')]
-class Review
+#[ORM\Table(name: 'menu_items')]
+class MenuItem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+    /**
+     * @var Collection<int, Menu>|ArrayCollection
+     */
+    #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'menuItems')]
+    private Collection $menuId;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private ?string $slug = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $content = null;
-
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $rating = null;
+    private ?string $ingredients = null;
 
     #[ORM\Column]
-    private ?bool $approved = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
+    private ?float $price = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -42,8 +41,10 @@ class Review
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
-    private ?bool $frontVisible = null;
+    public function __construct()
+    {
+        $this->menuId = new ArrayCollection();
+    }
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
@@ -64,74 +65,74 @@ class Review
         return $this->id;
     }
 
-    public function getName(): ?string
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenuId(): Collection
     {
-        return $this->name;
+        return $this->menuId;
     }
 
-    public function setName(string $name): static
+    public function addMenuId(Menu $menuId): static
     {
-        $this->name = $name;
+        if (!$this->menuId->contains($menuId)) {
+            $this->menuId->add($menuId);
+        }
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function removeMenuId(Menu $menuId): static
     {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
+        $this->menuId->removeElement($menuId);
 
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getSlug(): ?string
     {
-        return $this->content;
+        return $this->slug;
     }
 
-    public function setContent(string $content): static
+    public function setSlug(string $slug): static
     {
-        $this->content = $content;
+        $this->slug = $slug;
 
         return $this;
     }
 
-    public function getRating(): ?int
+    public function getTitle(): ?string
     {
-        return $this->rating;
+        return $this->title;
     }
 
-    public function setRating(int $rating): static
+    public function setTitle(string $title): static
     {
-        $this->rating = $rating;
+        $this->title = $title;
 
         return $this;
     }
 
-    public function isApproved(): ?bool
+    public function getIngredients(): ?string
     {
-        return $this->approved;
+        return $this->ingredients;
     }
 
-    public function setApproved(bool $approved): static
+    public function setIngredients(string $ingredients): static
     {
-        $this->approved = $approved;
+        $this->ingredients = $ingredients;
 
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getPrice(): ?float
     {
-        return $this->image;
+        return $this->price;
     }
 
-    public function setImage(?string $image): static
+    public function setPrice(float $price): static
     {
-        $this->image = $image;
+        $this->price = $price;
 
         return $this;
     }
@@ -156,18 +157,6 @@ class Review
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function isFrontVisible(): ?bool
-    {
-        return $this->frontVisible;
-    }
-
-    public function setFrontVisible(bool $frontVisible): static
-    {
-        $this->frontVisible = $frontVisible;
 
         return $this;
     }
