@@ -60,7 +60,13 @@ jobs:
         run: |
           cd /home/dev/docker-lemp &&
           docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
-##
-#  quality:
-#    runs-on: [php-test]
-#
+
+  quality-assurance:
+    runs-on: [php-test]
+    needs: [build-back]
+    steps:
+      - name: QA
+        run: |
+          cd /home/dev/docker-lemp &&
+          docker-compose exec app mehana-lian/vendor/bin/phpstan analyse -c mehana-lian/phpstan.dist.neon
+
