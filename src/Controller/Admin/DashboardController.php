@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Image;
+use App\Entity\Menu;
 use App\Entity\Message;
 use App\Entity\Review;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -36,5 +37,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Images', 'fas fa-images', Image::class);
         yield MenuItem::linkToCrud('Reviews', 'fas fa-comments', Review::class);
         yield MenuItem::linkToCrud('Messages', 'fas fa-message', Message::class);
+        yield MenuItem::linkToCrud('Menus', 'fas fa-utensils', Menu::class);
+        yield MenuItem::linkToCrud('Plates', 'fas fa-plate-wheat', \App\Entity\MenuItem::class);
     }
 }
