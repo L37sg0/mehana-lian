@@ -31,12 +31,17 @@ class Menu
     /**
      * @var Collection<int, MenuItem>|ArrayCollection
      */
-    #[ORM\ManyToMany(targetEntity: MenuItem::class, mappedBy: 'menuId')]
+    #[ORM\ManyToMany(targetEntity: MenuItem::class, inversedBy: 'menus')]
     private Collection $menuItems;
 
     public function __construct()
     {
         $this->menuItems = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->getTitle();
     }
 
     #[ORM\PrePersist]
@@ -118,7 +123,6 @@ class Menu
     {
         if (!$this->menuItems->contains($menuItem)) {
             $this->menuItems->add($menuItem);
-            $menuItem->addMenuId($this);
         }
 
         return $this;
@@ -126,9 +130,7 @@ class Menu
 
     public function removeMenuItem(MenuItem $menuItem): static
     {
-        if ($this->menuItems->removeElement($menuItem)) {
-            $menuItem->removeMenuId($this);
-        }
+        $this->menuItems->removeElement($menuItem);
 
         return $this;
     }

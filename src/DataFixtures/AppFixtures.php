@@ -3,6 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\Image;
+use App\Entity\Menu;
+use App\Entity\MenuItem;
 use App\Entity\Message;
 use App\Entity\Review;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -24,6 +26,7 @@ class AppFixtures extends Fixture
         $this->loadReviews($manager);
         $this->loadGalleryImages($manager);
         $this->loadMessages($manager);
+        $this->loadMenus($manager);
 
         $manager->flush();
     }
@@ -114,6 +117,43 @@ class AppFixtures extends Fixture
                 ->setContent($content)
             );
         }
+    }
+
+    public function loadMenus(ObjectManager $manager): void
+    {
+        $menuItem1 = new MenuItem();
+        $menuItem1->setSlug('hum_sandwich')
+            ->setTitle('Hum Sandwich')
+            ->setIngredients('hum, bread, cheese')
+            ->setPrice(4.99);
+        $manager->persist($menuItem1);
+
+        $menuItem2 = new MenuItem();
+        $menuItem2->setSlug('croissant')
+            ->setTitle('Croissant')
+            ->setIngredients('flour, butter, jam')
+            ->setPrice(4.49);
+        $manager->persist($menuItem2);
+
+        $menuItem3 = new MenuItem();
+        $menuItem3->setSlug('chicken_soup')
+            ->setTitle('Chicken Soup')
+            ->setIngredients('chicken, vegetables')
+            ->setPrice(4.99);
+        $manager->persist($menuItem3);
+
+        $menu1 = new Menu();
+        $menu1->setSlug('breakfast')
+            ->setTitle('Breakfast')
+            ->addMenuItem($menuItem1)
+            ->addMenuItem($menuItem2);
+        $manager->persist($menu1);
+
+        $menu2 = new Menu();
+        $menu2->setSlug('for_lunch')
+            ->setTitle('For Lunch')
+            ->addMenuItem($menuItem3);
+        $manager->persist($menu2);
     }
 
     public function loadBookings(): void

@@ -17,11 +17,6 @@ class MenuItem
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    /**
-     * @var Collection<int, Menu>|ArrayCollection
-     */
-    #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'menuItems')]
-    private Collection $menuId;
 
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
@@ -40,10 +35,15 @@ class MenuItem
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+    /**
+     * @var Collection<int, Menu>|ArrayCollection
+     */
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'menuItems')]
+    private Collection $menus;
 
     public function __construct()
     {
-        $this->menuId = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -68,30 +68,6 @@ class MenuItem
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, Menu>
-     */
-    public function getMenuId(): Collection
-    {
-        return $this->menuId;
-    }
-
-    public function addMenuId(Menu $menuId): static
-    {
-        if (!$this->menuId->contains($menuId)) {
-            $this->menuId->add($menuId);
-        }
-
-        return $this;
-    }
-
-    public function removeMenuId(Menu $menuId): static
-    {
-        $this->menuId->removeElement($menuId);
-
-        return $this;
     }
 
     public function getSlug(): ?string
@@ -162,6 +138,33 @@ class MenuItem
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->addMenuItem($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): static
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeMenuItem($this);
+        }
 
         return $this;
     }
