@@ -10,11 +10,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FilterFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -46,6 +49,7 @@ class MenuItemCrudController extends AbstractCrudController
     {
         $exportAction = Action::new('export')
             ->linkToUrl(function () {
+                /** @var Request $request */
                 $request = $this->requestStack->getCurrentRequest();
 
                 return $this->adminUrlGenerator->setAll($request->query->all())
@@ -64,16 +68,22 @@ class MenuItemCrudController extends AbstractCrudController
         AdminContext $context,
         CsvExporter $csvExporter
     ): Response {
+        /** @var FilterFactory $filterFactory */
+        $filterFactory = $this->container->get(FilterFactory::class);
+        /** @var CrudDto $crud */
+        $crud = $context->getCrud();
+        /** @var SearchDto $searchDto */
+        $searchDto = $context->getSearch();
 
         $fields = FieldCollection::new($this->configureFields(Crud::PAGE_INDEX));
-        $filters = $this->container
-            ->get(FilterFactory::class)
-            ->create($context->getCrud()
+        $filters = $filterFactory
+            ->create($crud
                 ->getFiltersConfig(),
                 $fields,
                 $context->getEntity()
             );
-        $queryBuilder = $this->createIndexQueryBuilder($context->getSearch(),
+        $queryBuilder = $this->createIndexQueryBuilder(
+            $searchDto,
             $context->getEntity(),
             $fields,
             $filters

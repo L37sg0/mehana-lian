@@ -22,6 +22,10 @@ class CsvExporter
         // Convert DateTime objects into strings
         $data = [];
 
+        /**
+         * @var int $index
+         * @var mixed[] $row
+         */
         foreach ($result as $index => $row) {
             foreach ($row as $columnKey => $columnValue) {
                 $data[$index][$columnKey] = $columnValue instanceof \DateTimeInterface
