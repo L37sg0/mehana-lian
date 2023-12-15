@@ -14,10 +14,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Factory\FilterFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 class MenuItemCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private AdminUrlGenerator $adminUrlGenerator,
+        private RequestStack $requestStack
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return MenuItem::class;
@@ -37,7 +45,13 @@ class MenuItemCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $exportAction = Action::new('export')
-            ->linkToCrudAction('export')
+            ->linkToUrl(function () {
+                $request = $this->requestStack->getCurrentRequest();
+
+                return $this->adminUrlGenerator->setAll($request->query->all())
+                    ->setAction('export')
+                    ->generateUrl();
+            })
             ->addCssClass('btn btn-success')
             ->setIcon('fa fa-download')
             ->createAsGlobalAction();
