@@ -115,23 +115,26 @@ class MenuItemCrudController extends AbstractCrudController
     ): Response {
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
-        $collection = null;
-        if ($file) {
-            $csvImporter = new CsvImporter();
-            $collection = $csvImporter->createEntityCollectionFromCsv(
-                $file,
-                MenuItem::class,
-                ['Slug', 'Title', 'Ingredients', 'Price'],
-            );
-        }
-        if (!empty($collection) && $collection->count() > 0) {
+
+        $csvImporter = new CsvImporter();
+        $collection = $csvImporter->createEntityCollectionFromCsv(
+            $file,
+            MenuItem::class,
+            ['Slug', 'Title', 'Ingredients', 'Price'],
+        );
+
+        if ($collection->count() > 0) {
             $menuItemRepository = $manager->getRepository(MenuItem::class);
 
             /** @var MenuItem $menuItem */
             foreach ($collection as $menuItem) {
                 if ($existingMenuItem = $menuItemRepository->findOneBy(['slug' => $menuItem->getSlug()])) {
-                    $existingMenuItem->setTitle($menuItem->getTitle())
+                    $existingMenuItem
+                        /** @phpstan-ignore-next-line */
+                        ->setTitle($menuItem->getTitle())
+                        /** @phpstan-ignore-next-line */
                         ->setIngredients($menuItem->getIngredients())
+                        /** @phpstan-ignore-next-line */
                         ->setPrice($menuItem->getPrice());
                     $menuItem = $existingMenuItem;
                 }

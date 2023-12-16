@@ -11,13 +11,20 @@ use Symfony\Component\Serializer\Serializer;
 
 class CsvImporter
 {
+    /**
+     * @param UploadedFile $file
+     * @param string $entityClass
+     * @param array<int, string> $requiredColumns
+     * @return Collection<int, mixed>
+     */
     public function createEntityCollectionFromCsv(
         UploadedFile $file,
         string $entityClass,
         array $requiredColumns,
     ): Collection {
         $data = $this->getArrayFromFileContent($file);
-        $missingColumns = $this->validateHeaders(array_keys($data[0]), $requiredColumns);
+        $headers = array_keys($data[0]);
+        $missingColumns = $this->validateHeaders($headers, $requiredColumns);
 
         $entityCollection = new ArrayCollection();
 
@@ -34,22 +41,33 @@ class CsvImporter
         return $entityCollection;
     }
 
-    public function validateHeaders(array $headers, array $requiredColumns)
+    /**
+     * @param array<int, mixed> $headers
+     * @param array<int, string> $requiredColumns
+     * @return array<int, mixed>
+     */
+    public function validateHeaders(array $headers, array $requiredColumns): array
     {
         $requiredHeaders = $requiredColumns;//
         $result = array_diff($requiredHeaders, $headers);
         return $result;
     }
 
+    /**
+     * @param UploadedFile $file
+     * @return array<int, array<mixed,mixed>>
+     */
     public function getArrayFromFileContent(UploadedFile $file): array {
 
         $csvContent = file($file->getRealPath());
 
+        /** @phpstan-ignore-next-line */
         $rows = array_map('str_getcsv', $csvContent);
         $headers = array_shift($rows);
 
         $data = array();
         foreach ($rows as $row) {
+            /** @phpstan-ignore-next-line */
             $data[] = array_combine($headers, $row);
         }
 
