@@ -1,0 +1,49 @@
+{% extends '@!EasyAdmin/crud/index.html.twig' %}
+
+{% block global_actions %}
+    <div class="global-actions">
+        <a class=" btn action-import btn btn-success"
+           href="http://mehana-lian.loc/admin?crudAction=import&amp;crudControllerFqcn=App%5CController%5CAdmin%5CMenuItemCrudController"
+           data-action-name="import"
+           onclick="openFileDialog(); return false;">
+            <i class="action-icon fa fa-upload"></i>
+            <span class="action-label">
+                Import
+            </span>
+        </a>
+        {% for action in global_actions %}
+        {{ include(action.templatePath, { action: action }, with_context = false) }}
+        {% endfor %}
+    </div>
+{% endblock  global_actions%}
+
+{% block configured_javascripts %}
+    {{ parent() }}
+    <script>
+        function openFileDialog() {
+            console.log('file dialog open')
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.style.display = 'none';
+
+            input.addEventListener('change', function () {
+                handleFileChange(input.files[0]);
+            });
+
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input)
+        }
+
+        function handleFileChange(file) {
+            console.log('File selected:', file)
+            const formData = new FormData();
+            formData.append("file", file);
+            fetch('/admin?crudAction=import&crudControllerFqcn=App\\Controller\\Admin\\MenuItemCrudController', {
+                method: 'POST',
+                body: formData
+            });
+        }
+    </script>
+{% endblock configured_javascripts %}

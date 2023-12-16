@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\MenuItem;
 use App\Service\CsvExporter;
+use App\Service\CsvImporter;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -17,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,9 +48,23 @@ class MenuItemCrudController extends AbstractCrudController
         ];
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return Crud::new()
+            ->overrideTemplate('crud/index', 'admin/crud/plates/index.html.twig');
+    }
+
     public function configureActions(Actions $actions): Actions
     {
-        $exportAction = Action::new('export')
+        $exportAction = $this->configureExportAction();
+
+        return parent::configureActions($actions)
+            ->add(Crud::PAGE_INDEX, $exportAction);
+    }
+
+    public function configureExportAction(): Action
+    {
+        return Action::new('export')
             ->linkToUrl(function () {
                 /** @var Request $request */
                 $request = $this->requestStack->getCurrentRequest();
@@ -59,9 +76,6 @@ class MenuItemCrudController extends AbstractCrudController
             ->addCssClass('btn btn-success')
             ->setIcon('fa fa-download')
             ->createAsGlobalAction();
-
-        return parent::configureActions($actions)
-            ->add(Crud::PAGE_INDEX, $exportAction);
     }
 
     public function export(
@@ -93,6 +107,42 @@ class MenuItemCrudController extends AbstractCrudController
         $response = $csvExporter->createResponseFromQueryBuilder($queryBuilder, $fields, $filename);
 
         return $response;
+    }
+
+    public function import(
+        Request $request,
+        EntityManagerInterface $manager
+    ): Response {
+        /** @var UploadedFile $file */
+        $file = $request->files->get('file');
+        $collection = null;
+        if ($file) {
+            $csvImporter = new CsvImporter();
+            $collection = $csvImporter->createEntityCollectionFromCsv(
+                $file,
+                MenuItem::class,
+                ['Slug', 'Title', 'Ingredients', 'Price'],
+            );
+        }
+        if (!empty($collection) && $collection->count() > 0) {
+            $menuItemRepository = $manager->getRepository(MenuItem::class);
+
+            /** @var MenuItem $menuItem */
+            foreach ($collection as $menuItem) {
+                if ($existingMenuItem = $menuItemRepository->findOneBy(['slug' => $menuItem->getSlug()])) {
+                    $existingMenuItem->setTitle($menuItem->getTitle())
+                        ->setIngredients($menuItem->getIngredients())
+                        ->setPrice($menuItem->getPrice());
+                    $menuItem = $existingMenuItem;
+                }
+                $manager->persist($menuItem);
+            }
+            $manager->flush();
+
+            return new Response('Success', 200);
+        }
+
+        return new Response('Fail', 400);
     }
 
 }
