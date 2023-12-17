@@ -17,6 +17,11 @@
     </div>
 {% endblock  global_actions%}
 
+{% block main %}
+    <div id="message-container"></div>
+    {{ parent() }}
+{% endblock main %}
+
 {% block configured_javascripts %}
     {{ parent() }}
     <script>
@@ -43,7 +48,35 @@
             fetch('/admin?crudAction=import&crudControllerFqcn=App\\Controller\\Admin\\MenuItemCrudController', {
                 method: 'POST',
                 body: formData
-            });
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('File import failed');
+                    }
+                })
+                .then(message => {
+                    showMessage('alert alert-success', message);
+                })
+                .catch(error => {
+                    showMessage('alert alert-danger', error.message);
+                });
+        }
+
+        function showMessage(type, text) {
+            const messageContainer = document.getElementById('message-container');
+
+            // Clear exising messages
+            messageContainer.innerHTML = '';
+            messageContainer.className = type;
+
+            // Create new message element
+            const messageElement = document.createElement('p');
+            messageElement.textContent = text;
+
+            // Append the message to the container
+            messageContainer.appendChild(messageElement);
         }
     </script>
 {% endblock configured_javascripts %}
