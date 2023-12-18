@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Admin;
 use Doctrine\ORM\EntityManagerInterface;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\QrCode;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +27,7 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('admin/security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
@@ -35,7 +37,6 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/authentication/2fa/enable', name: 'app_2fa_enable')]
-//    #[IsGranted('ROLE_USER')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function enable2fa(
         TotpAuthenticatorInterface $totpAuthenticator,
@@ -48,6 +49,22 @@ class SecurityController extends AbstractController
             $entityManager->flush();
         }
 
-        dd($user);
+        return $this->render('admin/security/enable2fa.html.twig');
+    }
+
+    #[Route('/authentication/2fa/qr-code', name: 'app_qr_code')]
+    #[IsGranted('ROLE_USER')]
+    public function displayAuthenticatorQrCode(TotpAuthenticatorInterface $totpAuthenticator)
+    {
+        /** @var Admin $user */
+        $user = $this->getUser();
+        $qrCodeContent = $totpAuthenticator->getQRContent($user);
+        $result = Builder::create()
+            ->data($qrCodeContent)
+            ->build();
+
+        return new Response($result->getString(), 200, [
+            'Content-Type' => 'image/png'
+        ]);
     }
 }
