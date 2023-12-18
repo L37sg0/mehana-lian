@@ -54,7 +54,7 @@ class SecurityController extends AbstractController
 
     #[Route('/authentication/2fa/qr-code', name: 'app_qr_code')]
     #[IsGranted('ROLE_USER')]
-    public function displayAuthenticatorQrCode(TotpAuthenticatorInterface $totpAuthenticator)
+    public function displayAuthenticatorQrCode(TotpAuthenticatorInterface $totpAuthenticator): Response
     {
         /** @var Admin $user */
         $user = $this->getUser();
