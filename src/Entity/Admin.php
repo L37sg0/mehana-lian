@@ -38,7 +38,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
     private ?string $username = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $totpSecret;
+    private ?string $totpSecret = null;
 
     /**
      * @return string|null
@@ -156,6 +156,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
 
     public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface|null
     {
-        return new TotpConfiguration($this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+        return new TotpConfiguration((string)$this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 }
