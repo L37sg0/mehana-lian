@@ -3,29 +3,61 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<main id="main">
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+        <div class="container" data-aos="fade-up">
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            <div class="section-header">
+                <h2>{{ 'Admin'|trans }}</h2>
+                <p><span>{{ 'Mehana Lian'|trans }}</span></p>
+            </div>
+            <form method="post" class="php-email-form p-3 p-md-4">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
+
+                <h2 class="h3 mb-3 font-weight-normal">Please sign in</h2>
+                <div class="form-group">
+<!--                <label for="inputEmail">Email</label>-->
+                <input type="email"
+                       value="{{ last_username }}"
+                       name="email"
+                       id="inputEmail"
+                       class="form-control"
+                       autocomplete="email"
+                       placeholder="Email"
+                       required autofocus>
+                </div>
+{#                <label for="inputPassword">Password</label>#}
+
+                <div class="form-group">
+                <input type="password"
+                       name="password"
+                       id="inputPassword"
+                       class="form-control"
+                       autocomplete="current-password"
+                       placeholder="Password"
+                       required>
+                </div>
+
+                <div class="text-center">
+                <input type="hidden" name="_csrf_token"
+                       value="{{ csrf_token('authenticate') }}"
+                >
+
+                <button class="btn btn-lg btn-primary" type="submit">
+                    Sign in
+                </button>
+                </div>
+            </form>
         </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+    </section>
+</main>
 {% endblock %}
