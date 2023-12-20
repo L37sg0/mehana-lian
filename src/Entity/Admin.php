@@ -52,7 +52,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
      * @param $totpSecret
      * @return $this
      */
-    public function setTotpSecret(string $totpSecret): self
+    public function setTotpSecret(string|null $totpSecret): self
     {
         $this->totpSecret = $totpSecret;
         return $this;

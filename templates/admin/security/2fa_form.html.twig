@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2fa{% endblock %}
+
+{% block body %}
+{#
+This is a demo template for the authentication form. Please consider overwriting this with your own template,
+especially when you're using different route names than the ones used here.
+#}
+
+
+
+<main id="main">
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+        <div class="container" data-aos="fade-up">
+
+            <div class="section-header">
+                <h2>{{ '2fa'|trans }}</h2>
+                <p><span>{{ 'Mehana Lian'|trans }}</span></p>
+                <h2>{{ 'Please enter your OTP Token'|trans }}</h2>
+            </div>
+
+            {# Let the user select the authentication method #}
+            {% if availableTwoFactorProviders|length > 1 %}
+                <p>{{ "choose_provider"|trans({}, 'SchebTwoFactorBundle') }}:
+                    {% for provider in availableTwoFactorProviders %}
+                        <a href="{{ path("2fa_login", {"preferProvider": provider}) }}">{{ provider }}</a>
+                    {% endfor %}
+                </p>
+            {% endif %}
+            <form class="form php-email-form p-3 p-md-4" action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post">
+
+                {# Authentication errors #}
+                {% if authenticationError %}
+                    <div class="form-group alert alert-danger">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</div>
+                {% endif %}
+                <div class="form-group">
+                    <input class="form-control"
+                           id="_auth_code"
+                           type="text"
+                           name="{{ authCodeParameterName }}"
+                           placeholder="OTP Token"
+                           autocomplete="one-time-code"
+                           autofocus
+                            {#
+                            https://www.twilio.com/blog/html-attributes-two-factor-authentication-autocomplete
+                            If your 2fa methods are using numeric codes only, add these attributes for better user experience:
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            #}
+                    />
+                </div>
+
+                {% if displayTrustedOption %}
+                    <input id="_trusted"
+                           type="checkbox"
+                           name="{{ trustedParameterName }}"
+                    placeholder="{{ "trusted"|trans({}, 'SchebTwoFactorBundle') }}"/> {{ "trusted"|trans({}, 'SchebTwoFactorBundle') }}
+                {% endif %}
+                {% if isCsrfProtectionEnabled %}
+                    <input type="hidden"
+                           name="{{ csrfParameterName }}"
+                           value="{{ csrf_token(csrfTokenId) }}">
+                {% endif %}
+                <div class="text-center">
+                    <button class="btn btn-lg btn-primary" type="submit">
+                        {{ 'Login'|trans }}
+                    </button>
+
+                    <a href="{{ logoutPath }}"
+                       class="btn btn-lg btn-outline-danger"
+                       style="border-radius: 50px;">
+                        {{ 'Cancel'|trans }}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+{% endblock %}

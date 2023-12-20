@@ -1,0 +1,32 @@
+{% extends '@!EasyAdmin/layout.html.twig' %}
+
+{% block page_title %}
+2fa Activation
+{% endblock page_title %}
+
+{% block main %}
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 mt-4">
+                <div class="card p-4">
+                    <h1 class="h3 mb-3 font-weight-normal text-center">
+                        {{ 'Use Authy or Google Authenticator to Scan the QR Code'|trans }}
+                    </h1>
+                    <img class="img-fluid mx-auto d-block mb-4" src="{{ path('app_qr_code') }}" alt="2fa QR Code">
+                    <form class="form-signin" method="post">
+                        {{ form_start(form) }}
+                        <div class="form-group">
+                            {{ form_row(form.is_enabled) }}
+                        </div>
+                        <div class="form-group text-center">
+                            {{ form_row(form.submit) }}
+                        </div>
+                        {{ form_end(form) }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock main %}
