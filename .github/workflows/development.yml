@@ -59,7 +59,7 @@ jobs:
       - name: Run tests
         run: |
           cd /home/dev/docker-lemp &&
-          docker-compose exec -T app mehana-lian/bin/phpunit mehana-lian/tests/
+          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
 
   quality-assurance:
     runs-on: [php-test]
