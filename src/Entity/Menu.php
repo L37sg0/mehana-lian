@@ -2,25 +2,40 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MenuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'menus')]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'menu:item']),
+        new GetCollection(normalizationContext: ['groups' =>  'menu:list'])
+    ],
+    order: ['title' => 'ASC'],
+    paginationEnabled: false
+)]
 class Menu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['menu:list', 'menu:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['menu:list', 'menu:item'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['menu:list', 'menu:item'])]
     private ?string $title = null;
 
     #[ORM\Column]
@@ -32,6 +47,7 @@ class Menu
      * @var Collection<int, MenuItem>|ArrayCollection
      */
     #[ORM\ManyToMany(targetEntity: MenuItem::class, inversedBy: 'menus')]
+    #[Groups(['menu:item'])]
     private Collection $menuItems;
 
     public function __construct()
