@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use App\Repository\AdminRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AdminRepository::class)]
-#[ORM\Table(name: '`admin`')]
-class Admin implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Table(name: '`admins`')]
+class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,6 +36,27 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $username = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $totpSecret = null;
+
+    /**
+     * @return string|null
+     */
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+
+    /**
+     * @param $totpSecret
+     * @return $this
+     */
+    public function setTotpSecret(string|null $totpSecret): self
+    {
+        $this->totpSecret = $totpSecret;
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -118,5 +142,20 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         $this->username = $username;
 
         return $this;
+    }
+
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return $this->totpSecret ? true : false;
+    }
+
+    public function getTotpAuthenticationUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
+
+    public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface|null
+    {
+        return new TotpConfiguration((string)$this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 }

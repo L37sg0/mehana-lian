@@ -8,10 +8,12 @@ use App\Entity\Message;
 use App\Entity\Review;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -39,5 +41,16 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Messages', 'fas fa-message', Message::class);
         yield MenuItem::linkToCrud('Menus', 'fas fa-utensils', Menu::class);
         yield MenuItem::linkToCrud('Plates', 'fas fa-plate-wheat', \App\Entity\MenuItem::class);
+    }
+    
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        $userMenu = parent::configureUserMenu($user);
+        $customMenuItems = [
+            MenuItem::linkToRoute('2FA', 'fa-qrcode', 'app_2fa_enable')
+        ];
+        $userMenu->addMenuItems($customMenuItems);
+        
+        return $userMenu;
     }
 }
