@@ -40,7 +40,7 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    #[Route(path: '/authentication/2fa/enable', name: 'app_2fa_enable')]
+    #[Route(path: '/admin/authentication/2fa/enable', name: 'app_2fa_enable')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function enable2fa(
         TotpAuthenticatorInterface $totpAuthenticator,
@@ -71,7 +71,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/authentication/2fa/qr-code', name: 'app_qr_code')]
+    #[Route('/admin/authentication/2fa/qr-code', name: 'app_qr_code')]
     #[IsGranted('ROLE_USER')]
     public function displayAuthenticatorQrCode(TotpAuthenticatorInterface $totpAuthenticator): Response
     {
