@@ -47,7 +47,7 @@ class DashboardController extends AbstractDashboardController
     {
         $userMenu = parent::configureUserMenu($user);
         $customMenuItems = [
-            MenuItem::linkToRoute('Enable 2FA', 'fa-qrcode', 'app_2fa_enable')
+            MenuItem::linkToRoute('2FA', 'fa-qrcode', 'app_2fa_enable')
         ];
         $userMenu->addMenuItems($customMenuItems);
         
