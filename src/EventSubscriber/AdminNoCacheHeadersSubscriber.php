@@ -15,6 +15,7 @@ class AdminNoCacheHeadersSubscriber implements EventSubscriberInterface
         $route = $request->attributes->get('_route');
 
         // Check if request is for admin route
+        /** @var string $route */
         if (
             $route &&
             strpos($route, 'admin') === 0
