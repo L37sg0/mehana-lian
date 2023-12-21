@@ -9,12 +9,12 @@ jobs:
   fetch:
     runs-on: [php-test]
     env:
-      APP_ENV=${{ secrets.TEST_APP_ENV}}
-      APP_SECRET=${{ secrets.TEST_APP_SECRET}}
-      DATABASE_URL=${{ secrets.TEST_DATABASE_URL}}
-      KERNEL_CLASS=${{ secrets.TEST_KERNEL_CLASS}}
-      CORS_ALLOW_ORIGIN=${{ secrets.TEST_CORS_ALLOW_ORIGIN}}
-      MESSENGER_TRANSPORT_DSN=${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
+      TEST_APP_ENV=${{ secrets.TEST_APP_ENV}}
+      TEST_APP_SECRET=${{ secrets.TEST_APP_SECRET}}
+      TEST_DATABASE_URL=${{ secrets.TEST_DATABASE_URL}}
+      TEST_KERNEL_CLASS=${{ secrets.TEST_KERNEL_CLASS}}
+      TEST_CORS_ALLOW_ORIGIN=${{ secrets.TEST_CORS_ALLOW_ORIGIN}}
+      TEST_MESSENGER_TRANSPORT_DSN=${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
     steps:
       - name: Clone Repository
         run: |
