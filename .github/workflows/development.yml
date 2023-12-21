@@ -8,6 +8,8 @@ on:
 jobs:
   fetch:
     runs-on: [php-test]
+    env:
+      TEST_ENV_VARS: ${{ secrets.TEST_ENV_VARS }}
     steps:
       - name: Clone Repository
         run: |
@@ -16,8 +18,7 @@ jobs:
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
           cd mehana-lian &&
           git checkout development &&
-          echo $TEST_ENV_VARS > .env && cat .env
-#          cp .env.test .env
+          echo $TEST_ENV_VARS > .env
 
   build-back:
     runs-on: [php-test]
