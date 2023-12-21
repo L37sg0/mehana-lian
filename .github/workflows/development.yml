@@ -16,7 +16,7 @@ jobs:
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
           cd mehana-lian &&
           git checkout development &&
-          echo $TEST_ENV_VARS > .env.dev
+          echo $TEST_ENV_VARS > .env
 #          cp .env.test .env
 
   build-back:
@@ -30,7 +30,7 @@ jobs:
           docker-compose exec \
           -T app \
           mehana-lian/bin/console dotenv:dump dev &&
-          rm -rf mehana-lian/.env.dev
+          rm -rf mehana-lian/.env
 
       - name: Database Setup
         run: |
