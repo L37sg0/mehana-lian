@@ -16,7 +16,7 @@ jobs:
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
           cd mehana-lian &&
           git checkout development &&
-          echo $TEST_ENV_VARS > .env
+          echo $TEST_ENV_VARS > .env && cat .env
 #          cp .env.test .env
 
   build-back:
