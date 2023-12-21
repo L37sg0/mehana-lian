@@ -15,7 +15,8 @@ jobs:
           rm -rf mehana-lian &&
           git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
           cd mehana-lian &&
-          git checkout development
+          git checkout development &&
+          echo $TEST_ENV_VARS > .env.dev
 #          cp .env.test .env
 
   build-back:
@@ -26,7 +27,6 @@ jobs:
         run: |
           cd /home/dev/docker-lemp &&
           docker-compose exec -T app composer -d mehana-lian install &&
-          echo $TEST_ENV_VARS > mehana-lian/.env.dev &&
           docker-compose exec \
           -T app \
           mehana-lian/bin/console dotenv:dump dev &&
