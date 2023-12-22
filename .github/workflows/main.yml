@@ -38,7 +38,7 @@ jobs:
           cd /home/dev/docker-lemp
           docker-compose exec -T app composer -d mehana-lian install
           docker-compose exec -T app composer -d mehana-lian dumpautoload
-          docker-compose exec app composer dump-env prod -d mehana-lian/
+          docker-compose exec -T app composer dump-env prod -d mehana-lian/
 
       - name: Database Setup
         run: |
