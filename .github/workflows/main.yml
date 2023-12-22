@@ -46,6 +46,15 @@ jobs:
           docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
+  build-api-auth:
+    runs-on: [ php-live ]
+    needs: [ build-back ]
+    steps:
+      - name: Generate Keypair lexik:jwt
+        run: |
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console lexik:jwt:generate-keypair --skip-if-exists
+
   build-front:
     runs-on: [php-live]
     needs: [fetch]
@@ -63,7 +72,7 @@ jobs:
 
   test:
     runs-on: [php-live]
-    needs: [ build-back ]
+    needs: [ build-back, build-api-auth ]
     steps:
       - name: Run tests
         run: |

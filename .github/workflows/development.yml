@@ -50,6 +50,15 @@ jobs:
           cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures
 
+  build-api-auth:
+    runs-on: [php-test]
+    needs: [build-back]
+    steps:
+      - name: Generate Keypair lexik:jwt
+        run: |
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console lexik:jwt:generate-keypair --skip-if-exists
+
   build-front:
     runs-on: [php-test]
     needs: [fetch]
@@ -66,7 +75,7 @@ jobs:
 
   test:
     runs-on: [php-test]
-    needs: [build-back]
+    needs: [build-back, build-api-auth]
     steps:
       - name: Run tests
         run: |
@@ -75,7 +84,7 @@ jobs:
 
   quality-assurance:
     runs-on: [php-test]
-    needs: [build-back]
+    needs: [ build-back, build-api-auth ]
     steps:
       - name: QA
         run: |
