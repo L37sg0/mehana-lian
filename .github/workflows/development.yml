@@ -15,6 +15,7 @@ jobs:
       TEST_KERNEL_CLASS: ${{ secrets.TEST_KERNEL_CLASS}}
       TEST_CORS_ALLOW_ORIGIN: ${{ secrets.TEST_CORS_ALLOW_ORIGIN}}
       TEST_MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
+      TEST_JWT_PASSPHRASE: ${{ secrets.TEST_JWT_PASSPHRASE }}
     steps:
       - name: Clone Repository
         run: |
@@ -31,6 +32,7 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$TEST_MESSENGER_TRANSPORT_DSN" >> .env
           echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
           echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env
+          echo "JWT_PASSPHRASE=$TEST_JWT_PASSPHRASE" >> .env
 
   build-back:
     runs-on: [php-test]

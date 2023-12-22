@@ -15,6 +15,7 @@ jobs:
       LIVE_KERNEL_CLASS: ${{ secrets.LIVE_KERNEL_CLASS}}
       LIVE_CORS_ALLOW_ORIGIN: ${{ secrets.LIVE_CORS_ALLOW_ORIGIN}}
       LIVE_MESSENGER_TRANSPORT_DSN: ${{ secrets.LIVE_MESSENGER_TRANSPORT_DSN}}
+      LIVE_JWT_PASSPHRASE: ${{ secrets.LIVE_JWT_PASSPHRASE }}
     steps:
       - name: Clone Repository
         run: |
@@ -28,6 +29,9 @@ jobs:
           echo "KERNEL_CLASS=$LIVE_KERNEL_CLASS" >> .env
           echo "CORS_ALLOW_ORIGIN=$LIVE_CORS_ALLOW_ORIGIN" >> .env
           echo "MESSENGER_TRANSPORT_DSN=$LIVE_MESSENGER_TRANSPORT_DSN" >> .env
+          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
+          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env
+          echo "JWT_PASSPHRASE=$LIVE_JWT_PASSPHRASE" >> .env
 
   build-back:
     runs-on: [php-live]
