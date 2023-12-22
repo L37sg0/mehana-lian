@@ -59,3 +59,13 @@ jobs:
         run: |
           cd /home/dev/docker-lemp
           docker-compose exec -T app npm run dev --prefix mehana-lian
+  
+
+  test:
+    runs-on: [php-live]
+    needs: [ build-back ]
+    steps:
+      - name: Run tests
+        run: |
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
