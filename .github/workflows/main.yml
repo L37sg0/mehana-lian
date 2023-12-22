@@ -8,12 +8,26 @@ on:
 jobs:
   fetch:
     runs-on: [php-live]
+    env:
+      LIVE_APP_ENV: ${{ secrets.LIVE_APP_ENV}}
+      LIVE_APP_SECRET: ${{ secrets.LIVE_APP_SECRET}}
+      LIVE_DATABASE_URL: ${{ secrets.LIVE_DATABASE_URL}}
+      LIVE_KERNEL_CLASS: ${{ secrets.LIVE_KERNEL_CLASS}}
+      LIVE_CORS_ALLOW_ORIGIN: ${{ secrets.LIVE_CORS_ALLOW_ORIGIN}}
+      LIVE_MESSENGER_TRANSPORT_DSN: ${{ secrets.LIVE_MESSENGER_TRANSPORT_DSN}}
     steps:
       - name: Clone Repository
         run: |
-          cd /home/dev/docker-lemp/mehana-lian && 
-          git fetch &&
+          cd /home/dev/docker-lemp/mehana-lian 
+          git fetch
           git pull
+          rm -rf .env
+          echo "APP_ENV=$LIVE_APP_ENV" >> .env
+          echo "APP_SECRET=$LIVE_APP_SECRET" >> .env
+          echo "DATABASE_URL=$LIVE_DATABASE_URL" >> .env
+          echo "KERNEL_CLASS=$LIVE_KERNEL_CLASS" >> .env
+          echo "CORS_ALLOW_ORIGIN=$LIVE_CORS_ALLOW_ORIGIN" >> .env
+          echo "MESSENGER_TRANSPORT_DSN=$LIVE_MESSENGER_TRANSPORT_DSN" >> .env
 
   build-back:
     runs-on: [php-live]
@@ -21,14 +35,14 @@ jobs:
     steps:
       - name: Composer Install
         run: |
-          cd /home/dev/docker-lemp &&
-          docker-compose exec -T app composer -d mehana-lian install &&
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app composer -d mehana-lian install
           docker-compose exec -T app composer -d mehana-lian dumpautoload
 
       - name: Database Setup
         run: |
-          cd /home/dev/docker-lemp &&
-          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists &&
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
   build-front:
@@ -37,10 +51,10 @@ jobs:
     steps:
       - name: NPM Install
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app npm install --prefix mehana-lian
 
       - name: NPM Build
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app npm run dev --prefix mehana-lian
