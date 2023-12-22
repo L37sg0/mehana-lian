@@ -41,4 +41,11 @@
 
     <extensions>
     </extensions>
+    
+    <groups>
+        <exclude>
+            <group>deprecated</group>
+        </exclude>
+    </groups>
+    
 </phpunit>
