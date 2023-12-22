@@ -84,6 +84,7 @@ jobs:
       - name: Run tests
         run: |
           cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console cache:clear
           docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist --exclude-group=deprecated
 
   quality-assurance:
