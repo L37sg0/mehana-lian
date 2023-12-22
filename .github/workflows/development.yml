@@ -18,11 +18,11 @@ jobs:
     steps:
       - name: Clone Repository
         run: |
-          cd /home/dev/docker-lemp && 
-          rm -rf mehana-lian &&
-          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian && 
-          cd mehana-lian &&
-          git checkout development &&
+          cd /home/dev/docker-lemp 
+          rm -rf mehana-lian
+          git clone https://github.com/L37sg0/mehana-lian.git ./mehana-lian 
+          cd mehana-lian
+          git checkout development
           echo "APP_ENV=$TEST_APP_ENV" >> .env
           echo "APP_SECRET=$TEST_APP_SECRET" >> .env
           echo "DATABASE_URL=$TEST_DATABASE_URL" >> .env
@@ -36,18 +36,18 @@ jobs:
     steps:
       - name: Composer Install
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app composer -d mehana-lian install
 
       - name: Database Setup
         run: |
-          cd /home/dev/docker-lemp &&
-          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists &&
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
       - name: Database Fixtures
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures
 
   build-front:
@@ -56,12 +56,12 @@ jobs:
     steps:
       - name: NPM Install
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app npm install --prefix mehana-lian
 
       - name: NPM Build
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app npm run dev --prefix mehana-lian      
 
   test:
@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Run tests
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
 
   quality-assurance:
@@ -79,6 +79,6 @@ jobs:
     steps:
       - name: QA
         run: |
-          cd /home/dev/docker-lemp &&
+          cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/vendor/bin/phpstan analyse -c mehana-lian/phpstan.dist.neon
 
