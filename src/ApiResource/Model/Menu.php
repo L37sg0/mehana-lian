@@ -7,14 +7,18 @@ class Menu
     private int $id;
     private string $slug;
     private string $title;
+    /** @var array<MenuItem> $items */
     private array $items;
 
+    /**
+     * @return MenuItem[]
+     */
     public function getItems(): array
     {
         return $this->items;
     }
 
-    public function addItem(MenuItem $item)
+    public function addItem(MenuItem $item): self
     {
         $this->items[] = $item;
         return $this;

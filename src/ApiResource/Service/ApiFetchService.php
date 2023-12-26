@@ -23,6 +23,15 @@ class ApiFetchService
         $this->serializer = new Serializer($normalizers, $encoders);
     }
 
+    /**
+     * @param string $apiEndpoint
+     * @param string $apiHost
+     * @return array<Menu>
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
     public function fetchMenus(string $apiEndpoint, string $apiHost): array
     {
         $menusArray = [];
@@ -33,7 +42,10 @@ class ApiFetchService
         ]);
 
         if ($this->responseIsValid($response)) {
-            foreach (json_decode($response->getContent(), true)['hydra:member'] as $menuArray) {
+            /** @phpstan-ignore-next-line  */
+            $responseMenus = json_decode($response->getContent(), true)['hydra:member'];
+            /** @phpstan-ignore-next-line */
+            foreach ($responseMenus as $menuArray) {
                 /** @var Menu $menu */
                 $menu = $this->serializer->deserialize($this->serializer->serialize($menuArray, 'json'), Menu::class, 'json');
                 $itemsArray = $this->fetchMenuItems($apiEndpoint, $apiHost, $menu->getId());
@@ -49,6 +61,16 @@ class ApiFetchService
         return $menusArray;
     }
 
+    /**
+     * @param string $apiEndpoint
+     * @param string $apiHost
+     * @param int $menuId
+     * @return array<MenuItem>
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
     public function fetchMenuItems(string $apiEndpoint, string $apiHost, int $menuId): array
     {
         $menuItemsArray = [];
@@ -59,6 +81,7 @@ class ApiFetchService
         ]);
 
         if ($this->responseIsValid($response)) {
+            /** @phpstan-ignore-next-line */
             foreach (json_decode($response->getContent(), true)['menuItems'] as $menuItemArray) {
                 $menuItem = $this->serializer->deserialize(
                     $this->serializer->serialize($menuItemArray, 'json'),
