@@ -15,6 +15,8 @@ jobs:
       LIVE_KERNEL_CLASS: ${{ secrets.LIVE_KERNEL_CLASS}}
       LIVE_CORS_ALLOW_ORIGIN: ${{ secrets.LIVE_CORS_ALLOW_ORIGIN}}
       LIVE_MESSENGER_TRANSPORT_DSN: ${{ secrets.LIVE_MESSENGER_TRANSPORT_DSN}}
+      LIVE_API_ENDPOINT: ${{ secrets.LIVE_API_ENDPOINT }}
+      LIVE_API_HOST: ${{ secrets.LIVE_API_HOST }}
     steps:
       - name: Clone Repository
         run: |
@@ -28,6 +30,8 @@ jobs:
           echo "KERNEL_CLASS=$LIVE_KERNEL_CLASS" >> .env
           echo "CORS_ALLOW_ORIGIN=$LIVE_CORS_ALLOW_ORIGIN" >> .env
           echo "MESSENGER_TRANSPORT_DSN=$LIVE_MESSENGER_TRANSPORT_DSN" >> .env
+          echo "API_ENDPOINT=$LIVE_API_ENDPOINT" >> .env
+          echo "API_HOST=$LIVE_API_HOST" >> .env
 
   build-back:
     runs-on: [php-live]

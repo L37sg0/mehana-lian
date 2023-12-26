@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\ApiResource\Service\ApiFetchService;
 use App\Entity\Message;
 use App\Entity\Review;
 use App\Form\MessageType;
@@ -43,9 +44,16 @@ class FrontController extends AbstractController
     }
 
     #[Route('/menu', name: 'menu', defaults: ['includeInWebsiteMenu' => true])]
-    public function menu(): Response
-    {
-        return $this->render('front/pages/menu.html.twig');
+    public function menu(
+        ApiFetchService $fetchService
+    ): Response {
+        $apiEndpoint = $this->getParameter('api.endpoint');
+        $apiHost = $this->getParameter('api.host');
+        $menus = $fetchService->fetchMenus($apiEndpoint, $apiHost);
+
+        return $this->render('front/pages/menu.html.twig', [
+            'menus' => $menus
+        ]);
     }
 
     #[Route('/events', name: 'events', defaults: ['includeInWebsiteMenu' => true])]

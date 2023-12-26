@@ -15,6 +15,8 @@ jobs:
       TEST_KERNEL_CLASS: ${{ secrets.TEST_KERNEL_CLASS}}
       TEST_CORS_ALLOW_ORIGIN: ${{ secrets.TEST_CORS_ALLOW_ORIGIN}}
       TEST_MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
+      TEST_API_ENDPOINT: ${{ secrets.TEST_API_ENDPOINT }}
+      TEST_API_HOST: ${{ secrets.TEST_API_HOST }}
     steps:
       - name: Clone Repository
         run: |
@@ -29,6 +31,8 @@ jobs:
           echo "KERNEL_CLASS=$TEST_KERNEL_CLASS" >> .env
           echo "CORS_ALLOW_ORIGIN=$TEST_CORS_ALLOW_ORIGIN" >> .env
           echo "MESSENGER_TRANSPORT_DSN=$TEST_MESSENGER_TRANSPORT_DSN" >> .env
+          echo "API_ENDPOINT=$TEST_API_ENDPOINT" >> .env
+          echo "API_HOST=$TEST_API_HOST" >> .env
 
   build-back:
     runs-on: [php-test]
