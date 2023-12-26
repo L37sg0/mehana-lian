@@ -16,9 +16,9 @@
 
             <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="200">
 
-                {% for menu in menus %}
+                {% for key, menu in menus %}
                     <li class="nav-item">
-                        <a class="nav-link show" data-bs-toggle="tab" data-bs-target="#menu-{{ menu.slug }}">
+                        <a class="nav-link {{ (key==0) ? 'active' : '' }} show" data-bs-toggle="tab" data-bs-target="#menu-{{ menu.slug }}">
                             <h4>{{ menu.title }}</h4>
                         </a>
                     </li><!-- End tab nav item -->
@@ -28,8 +28,8 @@
 
             <div class="tab-content" data-aos="fade-up" data-aos-delay="300">
 
-                {% for menu in menus %}
-                <div class="tab-pane fade show" id="menu-{{ menu.slug }}">
+                {% for key, menu in menus %}
+                <div class="tab-pane {{ (key==0) ? 'active' : '' }} fade show" id="menu-{{ menu.slug }}">
 
                         <div class="tab-header text-center">
                             <p>Menu</p>
