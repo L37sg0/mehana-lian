@@ -51,7 +51,6 @@ class FrontController extends AbstractController
         $apiHost = $this->getParameter('api.host');
         /** @phpstan-ignore-next-line */
         $menus = $fetchService->fetchMenus($apiEndpoint, $apiHost);
-
         return $this->render('front/pages/menu.html.twig', [
             'menus' => $menus
         ]);

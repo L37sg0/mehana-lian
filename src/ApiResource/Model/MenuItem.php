@@ -9,6 +9,7 @@ class MenuItem
     private string $title;
     private string $ingredients;
     private float $price;
+    private ?string $image = null;
 
     public function getId(): int
     {
@@ -65,4 +66,14 @@ class MenuItem
         return $this;
     }
 
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
 }
