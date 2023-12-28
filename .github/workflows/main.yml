@@ -17,6 +17,7 @@ jobs:
       LIVE_MESSENGER_TRANSPORT_DSN: ${{ secrets.LIVE_MESSENGER_TRANSPORT_DSN}}
       LIVE_API_ENDPOINT: ${{ secrets.LIVE_API_ENDPOINT }}
       LIVE_API_HOST: ${{ secrets.LIVE_API_HOST }}
+      LIVE_JWT_PASSPHRASE: ${{ secrets.LIVE_JWT_PASSPHRASE }}
     steps:
       - name: Clone Repository
         run: |
@@ -32,6 +33,9 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$LIVE_MESSENGER_TRANSPORT_DSN" >> .env
           echo "API_ENDPOINT=$LIVE_API_ENDPOINT" >> .env
           echo "API_HOST=$LIVE_API_HOST" >> .env
+          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
+          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env
+          echo "JWT_PASSPHRASE=$LIVE_JWT_PASSPHRASE" >> .env
 
   build-back:
     runs-on: [php-live]
@@ -50,6 +54,15 @@ jobs:
           docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
           docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
 
+  build-api-auth:
+    runs-on: [ php-live ]
+    needs: [ build-back ]
+    steps:
+      - name: Generate Keypair lexik:jwt
+        run: |
+          cd /home/dev/docker-lemp
+          docker-compose exec -T app mehana-lian/bin/console lexik:jwt:generate-keypair --skip-if-exists
+
   build-front:
     runs-on: [php-live]
     needs: [fetch]
@@ -67,9 +80,9 @@ jobs:
 
   test:
     runs-on: [php-live]
-    needs: [ build-back ]
+    needs: [ build-back, build-api-auth ]
     steps:
       - name: Run tests
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
+          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist --exclude-group=deprecated
