@@ -84,5 +84,5 @@ jobs:
       - name: QA
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/vendor/bin/phpstan analyse -c mehana-lian/phpstan.dist.neon
+          docker-compose exec -T app mehana-lian/vendor/bin/phpstan analyse -c mehana-lian/phpstan.dist.neon --memory-limit=256M
 
