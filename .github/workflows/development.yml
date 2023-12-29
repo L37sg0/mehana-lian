@@ -70,7 +70,7 @@ jobs:
 
   test:
     runs-on: [php-test]
-    needs: [build-back, build-api-auth]
+    needs: [build-back]
     steps:
       - name: Run tests
         run: |
@@ -80,7 +80,7 @@ jobs:
 
   quality-assurance:
     runs-on: [php-test]
-    needs: [ build-back, build-api-auth ]
+    needs: [ build-back ]
     steps:
       - name: QA
         run: |
