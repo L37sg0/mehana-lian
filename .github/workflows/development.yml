@@ -17,7 +17,6 @@ jobs:
       TEST_MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
       TEST_API_ENDPOINT: ${{ secrets.TEST_API_ENDPOINT }}
       TEST_API_HOST: ${{ secrets.TEST_API_HOST }}
-      TEST_JWT_PASSPHRASE: ${{ secrets.TEST_JWT_PASSPHRASE }}
     steps:
       - name: Clone Repository
         run: |
@@ -34,9 +33,6 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$TEST_MESSENGER_TRANSPORT_DSN" >> .env
           echo "API_ENDPOINT=$TEST_API_ENDPOINT" >> .env
           echo "API_HOST=$TEST_API_HOST" >> .env
-          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
-          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env
-          echo "JWT_PASSPHRASE=$TEST_JWT_PASSPHRASE" >> .env
 
   build-back:
     runs-on: [php-test]
@@ -57,15 +53,6 @@ jobs:
         run: |
           cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures
-
-  build-api-auth:
-    runs-on: [php-test]
-    needs: [build-back]
-    steps:
-      - name: Generate Keypair lexik:jwt
-        run: |
-          cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/console lexik:jwt:generate-keypair --skip-if-exists
 
   build-front:
     runs-on: [php-test]
@@ -89,7 +76,7 @@ jobs:
         run: |
           cd /home/dev/docker-lemp
           docker-compose exec -T app mehana-lian/bin/console cache:clear
-          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist --exclude-group=deprecated
+          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
 
   quality-assurance:
     runs-on: [php-test]
