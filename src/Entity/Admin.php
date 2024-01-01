@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AdminRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
@@ -39,6 +41,9 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $totpSecret = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $apiTokenSignature = null;
 
     /**
      * @return string|null
@@ -157,5 +162,17 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
     public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface|null
     {
         return new TotpConfiguration((string)$this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+    }
+
+    public function getApiTokenSignature(): ?string
+    {
+        return $this->apiTokenSignature;
+    }
+
+    public function setApiTokenSignature(?string $apiTokenSignature): static
+    {
+        $this->apiTokenSignature = $apiTokenSignature;
+
+        return $this;
     }
 }
