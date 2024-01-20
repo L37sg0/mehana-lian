@@ -9,15 +9,17 @@ security:
             entity:
                 class: App\Entity\Admin
                 property: email
+        # used to reload user from session & other features (e.g. switch_user)
+        # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         api_auth:
-            pattern: ^/api/auth
+            pattern: ^/api/authorize
             stateless: true
-            custom_authenticator: App\Security\ApiAuthAuthenticator
-        api:
-            pattern: ^/api
-            stateless: true
-            custom_authenticator: App\Security\ApiTokenAuthenticator
+            custom_authenticator: App\Security\AuthorizationServerAuthenticator
+#        api:
+#            pattern: ^/api
+#            stateless: true
+#            custom_authenticator: App\Security\ResourceServerAuthenticator
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false

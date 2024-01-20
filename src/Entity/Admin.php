@@ -42,8 +42,13 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $totpSecret = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $apiTokenSignature = null;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiIntegration::class, orphanRemoval: true)]
+    private Collection $apiIntegrations;
+
+    public function __construct()
+    {
+        $this->apiIntegrations = new ArrayCollection();
+    }
 
     /**
      * @return string|null
@@ -164,15 +169,34 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
         return new TotpConfiguration((string)$this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 
-    public function getApiTokenSignature(): ?string
+    /**
+     * @return Collection<int, ApiIntegration>
+     */
+    public function getApiIntegrations(): Collection
     {
-        return $this->apiTokenSignature;
+        return $this->apiIntegrations;
     }
 
-    public function setApiTokenSignature(?string $apiTokenSignature): static
+    public function addApiIntegration(ApiIntegration $apiIntegration): static
     {
-        $this->apiTokenSignature = $apiTokenSignature;
+        if (!$this->apiIntegrations->contains($apiIntegration)) {
+            $this->apiIntegrations->add($apiIntegration);
+            $apiIntegration->setUser($this);
+        }
 
         return $this;
     }
+
+    public function removeApiIntegration(ApiIntegration $apiIntegration): static
+    {
+        if ($this->apiIntegrations->removeElement($apiIntegration)) {
+            // set the owning side to null (unless already changed)
+            if ($apiIntegration->getUser() === $this) {
+                $apiIntegration->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+    
 }

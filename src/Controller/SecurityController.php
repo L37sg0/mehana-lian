@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Admin;
 use App\Form\TwoFactorAuthenticationType;
-use App\Security\ApiAuthAuthenticator;
+use App\Security\AuthorizationServerAuthenticator;
+use App\Service\CredentialsGenerator;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
@@ -94,56 +95,38 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/api/auth', name: 'api_auth', methods: ['POST'])]
-//    public function apiAuth(Request $request, ApiAuthAuthenticator $authenticator)
-    public function apiAuth(EntityManagerInterface $manager): Response
-    {
+    #[Route('admin/api-credentials', name: 'api_credentials')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function apiCredentials(
+//        CredentialsGenerator $credentialsGenerator,
+//        EntityManagerInterface $entityManager
+    ) {
         /** @var Admin $user */
         $user = $this->getUser();
-        $accessToken = $this->issueToken($user);
-        $user->setApiTokenSignature($accessToken->signature()->toString());
-        $manager->persist($user);
-        $manager->flush();
 
-
-        $data = [
-            'access_token' => $accessToken->toString(),
-        ];
-        return new JsonResponse($data, Response::HTTP_OK);
-
+        $apiIntegrations = $user->getApiIntegrations();
+        return $this->render('admin/security/api_credentials_generate.html.twig',[
+            'apiIntegrations' => $apiIntegrations
+        ]);
     }
-    
-    public function issueToken(UserInterface $user): UnencryptedToken
-    {
-        $tokenBuilder = (new \Lcobucci\JWT\Token\Builder(new JoseEncoder(), ChainedFormatter::default()));
-        $algorithm = new Sha256();
-        $signingKey = InMemory::plainText(random_bytes(32));
-        $now = new DateTimeImmutable();
 
-        $token = $tokenBuilder
-            // Configures the issuer (iss claim)
-                /** @phpstan-ignore-next-line  */
-            ->issuedBy($user->getUserIdentifier())
-            // Configures the audience (aud claim)
-            /** @phpstan-ignore-next-line */
-            ->permittedFor($this->getParameter('api.host'))
-            // Configures the subject of the token (sub claim)
-//            ->relatedTo('component1')
-            // Configures the id (jti claim)
-            ->identifiedBy('4f1g23a12aa')
-            // Configures the time that the token was issue (iat claim)
-            ->issuedAt($now)
-            // Configures the time that the token can be used (nbf claim)
-            ->canOnlyBeUsedAfter($now->modify('+1 minute'))
-            // Configures the expiration time of the token (exp claim)
-            ->expiresAt($now->modify('+1 hour'))
-            // Configures a new claim, called "uid"
-//            ->withClaim('uid', 1)
-            // Configures a new header, called "foo"
-//            ->withHeader('foo', 'bar')
-            // Builds a new token
-            ->getToken($algorithm, $signingKey);
+//    #[Route('/api/auth', name: 'api_auth', methods: ['POST'])]
+////    public function apiAuth(Request $request, ApiAuthAuthenticator $authenticator)
+//    public function apiAuth(EntityManagerInterface $manager): Response
+//    {
+//        /** @var Admin $user */
+//        $user = $this->getUser();
+//        $accessToken = $this->issueToken($user);
+//        $user->setApiTokenSignature($accessToken->signature()->toString());
+//        $manager->persist($user);
+//        $manager->flush();
+//
+//
+//        $data = [
+//            'access_token' => $accessToken->toString(),
+//        ];
+//        return new JsonResponse($data, Response::HTTP_OK);
+//
+//    }
 
-        return $token;
-    }
 }

@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class FrontController extends AbstractController
 {
@@ -45,12 +47,18 @@ class FrontController extends AbstractController
 
     #[Route('/menu', name: 'menu', defaults: ['includeInWebsiteMenu' => true])]
     public function menu(
-        ApiFetchService $fetchService
+        ApiFetchService $fetchService,
+        CacheInterface $cache
     ): Response {
         $apiEndpoint = $this->getParameter('api.endpoint');
         $apiHost = $this->getParameter('api.host');
         /** @phpstan-ignore-next-line */
-        $menus = $fetchService->fetchMenus($apiEndpoint, $apiHost);
+// https://www.linkedin.com/learning/symfony-6-essential-training/cache?autoplay=true&resume=false
+        $menus = $cache->get( 'menus', function( ItemInterface $item) use($fetchService, $apiEndpoint, $apiHost) {
+            $item->expiresAfter(60);
+            return $fetchService->fetchMenus($apiEndpoint, $apiHost);
+        });
+
         return $this->render('front/pages/menu.html.twig', [
             'menus' => $menus
         ]);

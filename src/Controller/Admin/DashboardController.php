@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\ApiIntegration;
 use App\Entity\Image;
 use App\Entity\Menu;
 use App\Entity\Message;
@@ -47,7 +48,8 @@ class DashboardController extends AbstractDashboardController
     {
         $userMenu = parent::configureUserMenu($user);
         $customMenuItems = [
-            MenuItem::linkToRoute('2FA', 'fa-qrcode', 'app_2fa_enable')
+            MenuItem::linkToRoute('2FA', 'fa-qrcode', 'app_2fa_enable'),
+            MenuItem::linkToCrud('API', 'fa-qrcode', ApiIntegration::class)
         ];
         $userMenu->addMenuItems($customMenuItems);
         
