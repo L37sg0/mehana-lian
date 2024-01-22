@@ -28,16 +28,19 @@ class AuthorizationServerAuthenticator extends AbstractAuthenticator
      */
     public function authenticate(Request $request): Passport
     {
-        $token = $request->headers->get('X-AUTH-API-KEY');
-        $credentials = explode(':', base64_decode((string)$token));
-        
-        $email      = $credentials[0];
-        $password   = $credentials[1];
-        
-        return new Passport(
-            new UserBadge((string)$email),
-            new PasswordCredentials((string)$password)
+        $apiKey = $request->headers->get('X-AUTH-API-KEY');
+        $credentials = explode(':', base64_decode((string)$apiKey));
+
+        $clientId      = $credentials[0];
+        $clientSecret  = $credentials[1];
+
+
+        $passport =  new Passport(
+            new UserBadge((string)$clientId),
+            new PasswordCredentials((string)$clientSecret)
         );
+
+        return $passport;
     }
 
     /**

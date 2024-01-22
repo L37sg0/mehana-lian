@@ -6,9 +6,10 @@ use App\Repository\ApiIntegrationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 #[ORM\Entity(repositoryClass: ApiIntegrationRepository::class)]
-#[ORM\HasLifecycleCallbacks]
+//#[ORM\HasLifecycleCallbacks]
 class ApiIntegration implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -34,12 +35,6 @@ class ApiIntegration implements UserInterface, PasswordAuthenticatedUserInterfac
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
-    #[ORM\PrePersist]
-    public function prePersist()
-    {
-        $this->clientSecret = hash('SHA256', $this->clientSecret);
-    }
 
     public function getId(): ?int
     {
@@ -87,9 +82,16 @@ class ApiIntegration implements UserInterface, PasswordAuthenticatedUserInterfac
         return $this;
     }
 
+    public function setPassword(string $password): static
+    {
+        $clientSecret = $password;
+
+        return $this->setClientSecret($clientSecret);
+    }
+    
     public function getPassword(): ?string
     {
-        return $this->getClientSecret();
+        return (string)$this->getClientSecret();
     }
 
     public function getClientSecret(): ?string

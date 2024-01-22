@@ -95,38 +95,24 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('admin/api-credentials', name: 'api_credentials')]
+    #[Route('/api/authorize', name: 'api_auth', methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function apiCredentials(
-//        CredentialsGenerator $credentialsGenerator,
-//        EntityManagerInterface $entityManager
-    ) {
+    public function apiAuth(EntityManagerInterface $manager): Response
+    {
         /** @var Admin $user */
         $user = $this->getUser();
-
-        $apiIntegrations = $user->getApiIntegrations();
-        return $this->render('admin/security/api_credentials_generate.html.twig',[
-            'apiIntegrations' => $apiIntegrations
-        ]);
-    }
-
-//    #[Route('/api/auth', name: 'api_auth', methods: ['POST'])]
-////    public function apiAuth(Request $request, ApiAuthAuthenticator $authenticator)
-//    public function apiAuth(EntityManagerInterface $manager): Response
-//    {
-//        /** @var Admin $user */
-//        $user = $this->getUser();
+        dd($user);
 //        $accessToken = $this->issueToken($user);
 //        $user->setApiTokenSignature($accessToken->signature()->toString());
 //        $manager->persist($user);
 //        $manager->flush();
-//
-//
+
+
 //        $data = [
 //            'access_token' => $accessToken->toString(),
 //        ];
 //        return new JsonResponse($data, Response::HTTP_OK);
-//
-//    }
+
+    }
 
 }
