@@ -56,9 +56,7 @@ class ApiIntegrationCrudController extends AbstractCrudController
         $clientSecretHash = $this->passwordHasher->hashPassword($entityInstance, $clientSecret);
 
         $entityInstance->setClientSecret($clientSecretHash)
-            ->setUser($this->getUser())
-            ->setRoles(['API_USER']);
-
+            ->setUser($this->getUser());
         $entityManager->persist($entityInstance);
         $entityManager->flush();
     }

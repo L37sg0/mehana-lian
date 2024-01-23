@@ -2,28 +2,24 @@
 
 namespace App\Controller;
 
+use App\Entity\AccessToken;
 use App\Entity\Admin;
+use App\Entity\ApiIntegration;
 use App\Form\TwoFactorAuthenticationType;
-use App\Security\AuthorizationServerAuthenticator;
-use App\Service\CredentialsGenerator;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
-use Lcobucci\JWT\Encoding\ChainedFormatter;
-use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\UnencryptedToken;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\Clock\now;
 
 class SecurityController extends AbstractController
 {
@@ -96,23 +92,29 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/api/authorize', name: 'api_auth', methods: ['POST'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function apiAuth(EntityManagerInterface $manager): Response
+    public function apiAuth(EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher): Response
     {
-        /** @var Admin $user */
+        /** @var ApiIntegration $user */
         $user = $this->getUser();
-        dd($user);
-//        $accessToken = $this->issueToken($user);
-//        $user->setApiTokenSignature($accessToken->signature()->toString());
-//        $manager->persist($user);
-//        $manager->flush();
 
+        $accessToken = new AccessToken();
+        $accessToken
+            ->setIat(time())
+            ->setExp(time() + 3600)
+            ->setValue(base64_encode(Uuid::v4() . ':' . $user->getClientId() . ':' . Uuid::v4()));
 
-//        $data = [
-//            'access_token' => $accessToken->toString(),
-//        ];
-//        return new JsonResponse($data, Response::HTTP_OK);
+        $responseData = [
+            'access_token' => $accessToken->getValue(),
+            'iat' => $accessToken->getIat(),
+            'exp' => $accessToken->getExp(),
+            'scopes' => $accessToken->getScopes()
+        ];
 
+        $accessToken->setValue($passwordHasher->hashPassword($user, $accessToken->getValue()));
+        $manager->persist($accessToken);
+        $manager->flush();
+
+        return new JsonResponse($responseData);
     }
 
 }
