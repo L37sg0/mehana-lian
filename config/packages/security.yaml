@@ -13,16 +13,21 @@ security:
             entity:
                 class: App\Entity\ApiIntegration
                 property: clientId
+        token_user_provider:
+            entity:
+                class: App\Entity\AccessToken
+                property: identifier
     firewalls:
         api_auth:
             pattern: ^/api/authorize
             stateless: true
             provider: api_user_provider
             custom_authenticator: App\Security\AuthorizationServerAuthenticator
-#        api:
-#            pattern: ^/api
-#            stateless: true
-#            custom_authenticator: App\Security\ResourceServerAuthenticator
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: token_user_provider
+            custom_authenticator: App\Security\ResourceServerAuthenticator
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false

@@ -9,6 +9,8 @@ parameters:
 
 services:
     Symfony\Component\Dotenv\Command\DotenvDumpCommand: ~
+    Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface: '@App\Security\AccessTokenHandler'
+    Symfony\Component\Security\Http\AccessToken\AccessTokenExtractorInterface: '@App\Security\AccessTokenExtractor'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

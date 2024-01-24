@@ -5,10 +5,14 @@ namespace App\Entity;
 use App\Repository\AccessTokenRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use function Symfony\Component\Clock\now;
 
 #[ORM\Entity(repositoryClass: AccessTokenRepository::class)]
-class AccessToken
+#[ORM\HasLifecycleCallbacks]
+class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const SCOPE_MENU = 'menu';
     public const SCOPE_MENU_ITEMS = 'menu_items';
@@ -17,6 +21,9 @@ class AccessToken
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column]
+    private ?string $identifier = null;
 
     #[ORM\Column(length: 255)]
     private ?string $value = null;
@@ -33,6 +40,18 @@ class AccessToken
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(?string $identifier): static
+    {
+        $this->identifier = $identifier;
+
+        return $this;
     }
 
     public function getValue(): ?string
@@ -90,5 +109,25 @@ class AccessToken
     public function isExpired(): bool
     {
         return false;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->getValue();
+    }
+
+    public function getRoles(): array
+    {
+        return $this->getScopes();
+    }
+
+    public function eraseCredentials(): void
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getIdentifier();
     }
 }

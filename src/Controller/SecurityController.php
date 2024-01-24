@@ -99,6 +99,7 @@ class SecurityController extends AbstractController
 
         $accessToken = new AccessToken();
         $accessToken
+            ->setIdentifier($user->getClientId())
             ->setIat(time())
             ->setExp(time() + 3600)
             ->setValue(base64_encode(Uuid::v4() . ':' . $user->getClientId() . ':' . Uuid::v4()));
