@@ -6,6 +6,8 @@
 parameters:
     api.endpoint: '%env(API_ENDPOINT)%'
     api.host: '%env(API_HOST)%'
+    api.client.id: '%env(CLIENT_ID)%'
+    api.client.secret: '%env(CLIENT_SECRET)%'
 
 services:
     Symfony\Component\Dotenv\Command\DotenvDumpCommand: ~

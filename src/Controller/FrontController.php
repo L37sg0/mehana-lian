@@ -52,11 +52,15 @@ class FrontController extends AbstractController
     ): Response {
         $apiEndpoint = $this->getParameter('api.endpoint');
         $apiHost = $this->getParameter('api.host');
+
+        $apiClientId = $this->getParameter('api.client.id');
+        $apiClientSecret = $this->getParameter('api.client.secret');
+
+        // https://www.linkedin.com/learning/symfony-6-essential-training/cache?autoplay=true&resume=false
         /** @phpstan-ignore-next-line */
-// https://www.linkedin.com/learning/symfony-6-essential-training/cache?autoplay=true&resume=false
-        $menus = $cache->get( 'menus', function( ItemInterface $item) use($fetchService, $apiEndpoint, $apiHost) {
+        $menus = $cache->get( 'menus', function( ItemInterface $item) use($fetchService, $apiEndpoint, $apiHost, $apiClientId, $apiClientSecret) {
             $item->expiresAfter(60);
-            return $fetchService->fetchMenus($apiEndpoint, $apiHost);
+            return $fetchService->fetchMenus($apiEndpoint, $apiHost, $apiClientId, $apiClientSecret);
         });
 
         return $this->render('front/pages/menu.html.twig', [

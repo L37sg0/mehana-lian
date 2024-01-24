@@ -6,6 +6,7 @@ use App\Entity\AccessToken;
 use App\Entity\Admin;
 use App\Entity\ApiIntegration;
 use App\Form\TwoFactorAuthenticationType;
+use App\Repository\AccessTokenRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
@@ -92,14 +93,19 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/api/authorize', name: 'api_auth', methods: ['POST'])]
-    public function apiAuth(EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher): Response
+    public function apiAuth(EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher, AccessTokenRepository $tokenRepository): Response
     {
         /** @var ApiIntegration $user */
         $user = $this->getUser();
 
-        $accessToken = new AccessToken();
+        // Check if token already exists by its identifier - will make al previous tokens invalid
+        $accessToken = $tokenRepository->findOneBy(['identifier' => $user->getClientId()]);
+
+        if (empty($accessToken)) {
+            $accessToken = (new AccessToken())->setIdentifier($user->getClientId());
+        }
+
         $accessToken
-            ->setIdentifier($user->getClientId())
             ->setIat(time())
             ->setExp(time() + 3600)
             ->setValue(base64_encode(Uuid::v4() . ':' . $user->getClientId() . ':' . Uuid::v4()));

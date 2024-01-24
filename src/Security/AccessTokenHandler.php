@@ -30,8 +30,6 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
         $token = $this->tokenRepository->findOneBy(['identifier' => $identifier]);
         $tokenValue = $accessToken;
 
-//        var_dump($this->isTokenValid($token, $tokenValue));exit();
-
         if (!$this->isTokenValid($token, $tokenValue)) {
             $identifier = '';
         }

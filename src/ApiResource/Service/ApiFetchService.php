@@ -32,15 +32,25 @@ class ApiFetchService
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function fetchMenus(string $apiEndpoint, string $apiHost): array
+    public function fetchMenus(
+        string $apiEndpoint,
+        string $apiHost,
+        string $apiClientId,
+        string $apiClientSecret
+    ): array
     {
+        $authApiKey = $this->getApiAuthKey($apiClientId, $apiClientSecret);
+        $tokenResponse = $this->getAccessToken($authApiKey, $apiEndpoint, $apiHost);
+        $accessToken = json_decode($tokenResponse->getContent(), true)['access_token'];
+
         $menusArray = [];
-        $response = $this->client->request('GET', $apiEndpoint, [
+        $response = $this->client->request('GET', $apiEndpoint . '/menus', [
             'headers' => [
-                'Host' => $apiHost
+                'Host' => $apiHost,
+                'Authorization' => "Bearer $accessToken"
             ]
         ]);
-
+//dd($response);
         if ($this->responseIsValid($response)) {
             /** @phpstan-ignore-next-line  */
             $responseMenus = json_decode($response->getContent(), true)['hydra:member'];
@@ -48,7 +58,7 @@ class ApiFetchService
             foreach ($responseMenus as $menuArray) {
                 /** @var Menu $menu */
                 $menu = $this->serializer->deserialize($this->serializer->serialize($menuArray, 'json'), Menu::class, 'json');
-                $itemsArray = $this->fetchMenuItems($apiEndpoint, $apiHost, $menu->getId());
+                $itemsArray = $this->fetchMenuItems($apiEndpoint, $apiHost, $menu->getId(), $accessToken);
                 /** @var MenuItem $item */
                 foreach ($itemsArray as $item) {
                     $menu->addItem($item);
@@ -57,7 +67,7 @@ class ApiFetchService
                 $menusArray[] = $menu;
             }
         }
-
+//dd($menusArray);
         return $menusArray;
     }
 
@@ -71,12 +81,13 @@ class ApiFetchService
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function fetchMenuItems(string $apiEndpoint, string $apiHost, int $menuId): array
+    public function fetchMenuItems(string $apiEndpoint, string $apiHost, int $menuId, string $accessToken): array
     {
         $menuItemsArray = [];
-        $response = $this->client->request('GET', $apiEndpoint . "/$menuId", [
+        $response = $this->client->request('GET', $apiEndpoint . "/menus/$menuId", [
             'headers' => [
-                'Host' => $apiHost
+                'Host' => $apiHost,
+                'Authorization' => "Bearer $accessToken"
             ]
         ]);
 
@@ -98,5 +109,20 @@ class ApiFetchService
     public function responseIsValid(ResponseInterface $response): bool
     {
         return $response->getStatusCode() >= 200 && $response->getStatusCode() <= 299;
+    }
+
+    public function getAccessToken(string $authApiKey, string $apiEndpoint, string $apiHost): ResponseInterface
+    {
+        return $this->client->request('POST', $apiEndpoint . '/authorize', [
+            'headers' => [
+                'Host'           => $apiHost,
+                'X-AUTH-API-KEY' => $authApiKey
+            ]
+        ]);
+    }
+
+    public function getApiAuthKey(string $apiClientId, string $apiClientSecret): string
+    {
+        return base64_encode("$apiClientId:$apiClientSecret");
     }
 }
