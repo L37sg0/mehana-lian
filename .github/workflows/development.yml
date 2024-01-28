@@ -17,6 +17,8 @@ jobs:
       TEST_MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN}}
       TEST_API_ENDPOINT: ${{ secrets.TEST_API_ENDPOINT }}
       TEST_API_HOST: ${{ secrets.TEST_API_HOST }}
+      TEST_CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
+      TEST_CLIENT_SECRET: ${{ secrets.TEST_CLIENT_SECRET }}
     steps:
       - name: Clone Repository
         run: |
@@ -33,6 +35,8 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$TEST_MESSENGER_TRANSPORT_DSN" >> .env
           echo "API_ENDPOINT=$TEST_API_ENDPOINT" >> .env
           echo "API_HOST=$TEST_API_HOST" >> .env
+          echo "CLIENT_ID=$TEST_CLIENT_ID" >> .env
+          echo "CLIENT_SECRET=$TEST_CLIENT_SECRET" >> .env
 
   build-back:
     runs-on: [php-test]
@@ -46,13 +50,16 @@ jobs:
       - name: Database Setup
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
-          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists -e test -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate -e test -n
 
       - name: Database Fixtures
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures
+          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures -e test -n
 
   build-front:
     runs-on: [php-test]

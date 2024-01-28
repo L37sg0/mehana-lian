@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AdminRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
@@ -39,6 +41,15 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $totpSecret = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiIntegration::class, orphanRemoval: true)]
+    /** @phpstan-ignore-next-line  */
+    private Collection $apiIntegrations;
+
+    public function __construct()
+    {
+        $this->apiIntegrations = new ArrayCollection();
+    }
 
     /**
      * @return string|null
@@ -158,4 +169,35 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
     {
         return new TotpConfiguration((string)$this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
+
+    /**
+     * @return Collection<int, ApiIntegration>
+     */
+    public function getApiIntegrations(): Collection
+    {
+        return $this->apiIntegrations;
+    }
+
+    public function addApiIntegration(ApiIntegration $apiIntegration): static
+    {
+        if (!$this->apiIntegrations->contains($apiIntegration)) {
+            $this->apiIntegrations->add($apiIntegration);
+            $apiIntegration->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApiIntegration(ApiIntegration $apiIntegration): static
+    {
+        if ($this->apiIntegrations->removeElement($apiIntegration)) {
+            // set the owning side to null (unless already changed)
+            if ($apiIntegration->getUser() === $this) {
+                $apiIntegration->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+    
 }

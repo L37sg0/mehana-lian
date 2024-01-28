@@ -17,6 +17,8 @@ jobs:
       LIVE_MESSENGER_TRANSPORT_DSN: ${{ secrets.LIVE_MESSENGER_TRANSPORT_DSN}}
       LIVE_API_ENDPOINT: ${{ secrets.LIVE_API_ENDPOINT }}
       LIVE_API_HOST: ${{ secrets.LIVE_API_HOST }}
+      LIVE_CLIENT_ID: ${{ secrets.LIVE_CLIENT_ID }}
+      LIVE_CLIENT_SECRET: ${{ secrets.LIVE_CLIENT_SECRET }}
     steps:
       - name: Clone Repository
         run: |
@@ -32,6 +34,8 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$LIVE_MESSENGER_TRANSPORT_DSN" >> .env
           echo "API_ENDPOINT=$LIVE_API_ENDPOINT" >> .env
           echo "API_HOST=$LIVE_API_HOST" >> .env
+          echo "CLIENT_ID=$LIVE_CLIENT_ID" >> .env
+          echo "CLIENT_SECRET=$LIVE_CLIENT_SECRET" >> .env
 
   build-back:
     runs-on: [php-live]
@@ -63,12 +67,12 @@ jobs:
         run: |
           cd /home/dev/docker-lemp
           docker-compose exec -T app npm run dev --prefix mehana-lian
-
-  test:
-    runs-on: [php-live]
-    needs: [ build-back ]
-    steps:
-      - name: Run tests
-        run: |
-          cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist
+#
+#  test:
+#    runs-on: [php-live]
+#    needs: [ build-back ]
+#    steps:
+#      - name: Run tests
+#        run: |
+#          cd /home/dev/docker-lemp
+#          docker-compose exec -T app mehana-lian/bin/phpunit -c mehana-lian/phpunit.xml.dist

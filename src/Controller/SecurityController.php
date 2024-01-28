@@ -2,17 +2,25 @@
 
 namespace App\Controller;
 
+use App\Entity\AccessToken;
 use App\Entity\Admin;
+use App\Entity\ApiIntegration;
 use App\Form\TwoFactorAuthenticationType;
+use App\Repository\AccessTokenRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\Clock\now;
 
 class SecurityController extends AbstractController
 {
@@ -82,6 +90,38 @@ class SecurityController extends AbstractController
         return new Response($result->getString(), 200, [
             'Content-Type' => 'image/png'
         ]);
+    }
+
+    #[Route('/api/authorize', name: 'api_auth', methods: ['POST'])]
+    public function apiAuth(EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher, AccessTokenRepository $tokenRepository): Response
+    {
+        /** @var ApiIntegration $user */
+        $user = $this->getUser();
+
+        // Check if token already exists by its identifier - will make al previous tokens invalid
+        $accessToken = $tokenRepository->findOneBy(['identifier' => $user->getClientId()]);
+
+        if (empty($accessToken)) {
+            $accessToken = (new AccessToken())->setIdentifier($user->getClientId());
+        }
+
+        $accessToken
+            /** @phpstan-ignore-next-line  */
+            ->setIat(time())->setExp(time() + 3600)
+            ->setValue(base64_encode(Uuid::v4() . ':' . $user->getClientId() . ':' . Uuid::v4()));
+
+        $responseData = [
+            'access_token' => $accessToken->getValue(),
+            'iat' => $accessToken->getIat(),
+            'exp' => $accessToken->getExp(),
+            'scopes' => $accessToken->getScopes()
+        ];
+
+        $accessToken->setValue($passwordHasher->hashPassword($user, (string)$accessToken->getValue()));
+        $manager->persist($accessToken);
+        $manager->flush();
+
+        return new JsonResponse($responseData);
     }
 
 }

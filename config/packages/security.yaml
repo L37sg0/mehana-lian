@@ -9,10 +9,25 @@ security:
             entity:
                 class: App\Entity\Admin
                 property: email
+        api_user_provider:
+            entity:
+                class: App\Entity\ApiIntegration
+                property: clientId
+        token_user_provider:
+            entity:
+                class: App\Entity\AccessToken
+                property: identifier
     firewalls:
+        api_auth:
+            pattern: ^/api/authorize
+            stateless: true
+            provider: api_user_provider
+            custom_authenticator: App\Security\AuthorizationServerAuthenticator
         api:
             pattern: ^/api
             stateless: true
+            provider: token_user_provider
+            custom_authenticator: App\Security\ResourceServerAuthenticator
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -22,8 +37,6 @@ security:
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
 
             remember_me:
                 secret: '%kernel.secret%'
@@ -44,8 +57,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-#        - { path: ^/api/login,  roles: PUBLIC_ACCESS }
-#        - { path: ^/api,        roles: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/api/authorize,  roles: PUBLIC_ACCESS }
+#        - { path: ^/api,        roles: ROLE_API_USER }
         # This makes the logout route accessible during two-factor authentication. Allows the user to
         # cancel two-factor authentication, if they need to.
         - { path: ^/logout, role: PUBLIC_ACCESS }
