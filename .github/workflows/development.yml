@@ -50,16 +50,16 @@ jobs:
       - name: Database Setup
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists
-          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate
-          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists -e test
-          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate -e test
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:database:create --if-not-exists -e test -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:migrations:migrate -e test -n
 
       - name: Database Fixtures
         run: |
           cd /home/dev/docker-lemp
-          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures
-          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures -e test
+          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures -n
+          docker-compose exec -T app mehana-lian/bin/console doctrine:fixtures:load --group=AppFixtures --group=AdminFixtures -e test -n
 
   build-front:
     runs-on: [php-test]
