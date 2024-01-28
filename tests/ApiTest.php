@@ -14,7 +14,7 @@ class ApiTest extends ApiTestCase
         $this->assertEquals(401, $response->getStatusCode());
     }
 
-    public function testApiAuthorizationReturnsAccessToken()
+    public function testApiAuthorizationReturnsAccessToken(): void
     {
         $clientId = $_ENV['CLIENT_ID'];
         $clientSecret = $_ENV['CLIENT_SECRET'];
@@ -31,12 +31,13 @@ class ApiTest extends ApiTestCase
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
+        /** @phpstan-ignore-next-line */
         $responseContentKeys = array_keys(json_decode($response->getContent(), true));
 
         $this->assertEquals(['access_token', 'iat', 'exp', 'scopes'], $responseContentKeys);
     }
 
-    public function testApiResourceCanBeAccessedWithToken()
+    public function testApiResourceCanBeAccessedWithToken(): void
     {
 
         $clientId = $_ENV['CLIENT_ID'];
@@ -52,6 +53,8 @@ class ApiTest extends ApiTestCase
                 'X-AUTH-API-KEY' => $authApiKey
             ]
         ]);
+
+        /** @phpstan-ignore-next-line */
         $accessToken = json_decode($tokenResponse->getContent(), true)['access_token'];
 
         $resourceResponse = static::createClient()->request('GET', $apiEndpoint . '/menus', [
