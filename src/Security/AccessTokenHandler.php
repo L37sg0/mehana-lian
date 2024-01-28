@@ -39,7 +39,7 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
         return $userBadge;
     }
 
-    public function isTokenValid(?AccessToken $token, string $tokenValue)
+    public function isTokenValid(?AccessToken $token, string $tokenValue): bool
     {
         if (!empty($token) && !$token->isExpired() && $this->passwordHasher->isPasswordValid($token, $tokenValue)) {
             return true;

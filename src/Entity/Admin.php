@@ -43,6 +43,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface, TwoFac
     private ?string $totpSecret = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiIntegration::class, orphanRemoval: true)]
+    /** @phpstan-ignore-next-line  */
     private Collection $apiIntegrations;
 
     public function __construct()

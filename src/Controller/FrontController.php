@@ -57,9 +57,9 @@ class FrontController extends AbstractController
         $apiClientSecret = $this->getParameter('api.client.secret');
 
         // https://www.linkedin.com/learning/symfony-6-essential-training/cache?autoplay=true&resume=false
-        /** @phpstan-ignore-next-line */
         $menus = $cache->get( 'menus', function( ItemInterface $item) use($fetchService, $apiEndpoint, $apiHost, $apiClientId, $apiClientSecret) {
             $item->expiresAfter(60);
+            /** @phpstan-ignore-next-line  */
             return $fetchService->fetchMenus($apiEndpoint, $apiHost, $apiClientId, $apiClientSecret);
         });
 

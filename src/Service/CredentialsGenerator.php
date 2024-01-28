@@ -6,7 +6,10 @@ use Symfony\Component\Uid\Uuid;
 
 class CredentialsGenerator
 {
-    public function generateCredentials()
+    /**
+     * @return array<string,string>
+     */
+    public function generateCredentials(): array
     {
         return [
             'clientId' => Uuid::v4(),

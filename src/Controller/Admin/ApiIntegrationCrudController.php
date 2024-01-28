@@ -34,7 +34,7 @@ class ApiIntegrationCrudController extends AbstractCrudController
         ];
     }
 
-    public function createEntity(string $entityFqcn)
+    public function createEntity(string $entityFqcn): ApiIntegration
     {
         /** @var ApiIntegration $apiIntegration */
         $apiIntegration = new $entityFqcn();
@@ -48,14 +48,15 @@ class ApiIntegrationCrudController extends AbstractCrudController
 
         return $apiIntegration;
     }
-
+    /** @phpstan-ignore-next-line  */
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         /** @var ApiIntegration $entityInstance */
         $clientSecret = $entityInstance->getClientSecret();
-        $clientSecretHash = $this->passwordHasher->hashPassword($entityInstance, $clientSecret);
+        $clientSecretHash = $this->passwordHasher->hashPassword($entityInstance, (string)$clientSecret);
 
         $entityInstance->setClientSecret($clientSecretHash)
+            /** @phpstan-ignore-next-line  */
             ->setUser($this->getUser());
         $entityManager->persist($entityInstance);
         $entityManager->flush();

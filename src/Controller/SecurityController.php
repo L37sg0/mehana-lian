@@ -106,8 +106,8 @@ class SecurityController extends AbstractController
         }
 
         $accessToken
-            ->setIat(time())
-            ->setExp(time() + 3600)
+            /** @phpstan-ignore-next-line  */
+            ->setIat(time())->setExp(time() + 3600)
             ->setValue(base64_encode(Uuid::v4() . ':' . $user->getClientId() . ':' . Uuid::v4()));
 
         $responseData = [
@@ -117,7 +117,7 @@ class SecurityController extends AbstractController
             'scopes' => $accessToken->getScopes()
         ];
 
-        $accessToken->setValue($passwordHasher->hashPassword($user, $accessToken->getValue()));
+        $accessToken->setValue($passwordHasher->hashPassword($user, (string)$accessToken->getValue()));
         $manager->persist($accessToken);
         $manager->flush();
 

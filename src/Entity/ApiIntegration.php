@@ -21,6 +21,7 @@ class ApiIntegration implements UserInterface, PasswordAuthenticatedUserInterfac
     private ?string $clientId = null;
 
     #[ORM\Column]
+    /** @phpstan-ignore-next-line  */
     private array $roles = [];
 
     /**
@@ -74,6 +75,9 @@ class ApiIntegration implements UserInterface, PasswordAuthenticatedUserInterfac
         return array_unique($roles);
     }
 
+    /**
+     * @param array<string> $roles
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;

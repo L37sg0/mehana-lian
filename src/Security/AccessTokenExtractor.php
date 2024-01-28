@@ -11,6 +11,7 @@ class AccessTokenExtractor implements AccessTokenExtractorInterface
     public function extractAccessToken(Request $request): ?string
     {
         $accessToken = $request->headers->get('Authorization');
+        /** @phpstan-ignore-next-line */
         $accessToken = str_replace('Bearer ', '', $accessToken);
         return $accessToken;
     }

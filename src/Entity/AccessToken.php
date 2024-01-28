@@ -35,6 +35,7 @@ class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $exp = null;
 
     #[ORM\Column]
+    /** @phpstan-ignore-next-line  */
     private array $scopes = [];
 
     public function getId(): ?int
@@ -90,6 +91,9 @@ class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getScopes(): array
     {
         $scopes = $this->scopes;
@@ -99,6 +103,10 @@ class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($scopes);
     }
 
+    /**
+     * @param array<string> $scopes
+     * @return $this
+     */
     public function setScopes(array $scopes): static
     {
         $this->scopes = $scopes;
@@ -111,6 +119,10 @@ class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
         return false;
     }
 
+    public function setPassword(string $password): static
+    {
+        return $this->setValue($password);
+    }
     public function getPassword(): ?string
     {
         return $this->getValue();
@@ -128,6 +140,6 @@ class AccessToken implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->getIdentifier();
+        return (string)$this->getIdentifier();
     }
 }

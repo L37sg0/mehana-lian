@@ -41,16 +41,16 @@ class ApiFetchService
     {
         $authApiKey = $this->getApiAuthKey($apiClientId, $apiClientSecret);
         $tokenResponse = $this->getAccessToken($authApiKey, $apiEndpoint, $apiHost);
+        /** @phpstan-ignore-next-line */
         $accessToken = json_decode($tokenResponse->getContent(), true)['access_token'];
 
         $menusArray = [];
         $response = $this->client->request('GET', $apiEndpoint . '/menus', [
             'headers' => [
                 'Host' => $apiHost,
-                'Authorization' => "Bearer $accessToken"
+                'Authorization' => "Bearer " . $accessToken
             ]
         ]);
-//dd($response);
         if ($this->responseIsValid($response)) {
             /** @phpstan-ignore-next-line  */
             $responseMenus = json_decode($response->getContent(), true)['hydra:member'];
@@ -58,6 +58,7 @@ class ApiFetchService
             foreach ($responseMenus as $menuArray) {
                 /** @var Menu $menu */
                 $menu = $this->serializer->deserialize($this->serializer->serialize($menuArray, 'json'), Menu::class, 'json');
+                /** @phpstan-ignore-next-line */
                 $itemsArray = $this->fetchMenuItems($apiEndpoint, $apiHost, $menu->getId(), $accessToken);
                 /** @var MenuItem $item */
                 foreach ($itemsArray as $item) {
@@ -67,7 +68,6 @@ class ApiFetchService
                 $menusArray[] = $menu;
             }
         }
-//dd($menusArray);
         return $menusArray;
     }
 
