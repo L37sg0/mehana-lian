@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\ApiResource\Service\ApiFetchService;
+use App\Entity\Booking;
 use App\Entity\Message;
 use App\Entity\Review;
+use App\Form\BookingType;
 use App\Form\MessageType;
 use App\Form\ReviewType;
 use App\Repository\ImageRepository;
@@ -18,6 +20,7 @@ use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use function Symfony\Component\Translation\t;
 
 class FrontController extends AbstractController
 {
@@ -118,9 +121,34 @@ class FrontController extends AbstractController
     }
 
     #[Route('/book-a-table', name: 'book-a-table', defaults: ['includeInWebsiteMenu' => false])]
-    public function bookTable(): Response
+    public function bookTable(Request $request): Response
     {
-        return $this->render('front/pages/book-a-table.html.twig');
+        $booking = new Booking();
+        $form = $this->createForm(BookingType::class, $booking);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+//            $booking->setName($name)
+            $this->entityManager->persist($booking);
+            $this->entityManager->flush();
+
+            $this->notifier->send(new Notification(
+                t('Thank your for your booking. Our manager will review and confirm it to you soon.'),
+                ['browser']
+            ));
+
+            return $this->redirectToRoute('home');
+        }
+
+        if ($form->isSubmitted()) {
+            $this->notifier->send(new Notification(
+                'Can you check your submission? There are some problems with it.',
+                ['browser']
+            ));
+        }
+        return $this->render('front/pages/book-a-table.html.twig',[
+            'form' => $form,
+        ]);
     }
 
     #[Route('/reviews', name: 'reviews', defaults: ['includeInWebsiteMenu' => false])]
