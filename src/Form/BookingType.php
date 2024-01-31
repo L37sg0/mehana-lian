@@ -7,7 +7,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -45,17 +47,22 @@ class BookingType extends AbstractType
                     new NotBlank(null, t('Please pick a date for your reservation.')),
                 ],
             ])
-            ->add('time', DateType::class, [
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(null, t('Please pick specific time for reservation.'))
-                ],
-            ])
-            ->add('numberOfPeople', IntegerType::class, [
+//            ->add('time', DateType::class, [
+//                'required' => true,
+//                'constraints' => [
+//                    new NotBlank(null, t('Please pick specific time for reservation.'))
+//                ],
+//            ])
+            ->add('seats', IntegerType::class, [
                 'required' => true,
                 'constraints' => [
                     new NotBlank(null, t('Please select number of seats.'))
                 ],
+            ])
+            ->add('message', TextareaType::class)
+
+            ->add('submit', SubmitType::class, [
+                'label' => t('Book a Table'),
             ])
             ;
     }

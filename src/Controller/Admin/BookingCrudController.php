@@ -23,8 +23,8 @@ class BookingCrudController extends AbstractCrudController
             TextField::new('name'),
             TextField::new('email'),
             TextField::new('phone'),
-            DateTimeField::new('reservation_date'),
-            IntegerField::new('number_of_people'),
+            DateTimeField::new('date'),
+            IntegerField::new('seats'),
             TextareaField::new('message'),
         ];
     }

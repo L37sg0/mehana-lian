@@ -26,10 +26,11 @@ class Booking
     private ?string $phone = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $reservationDate = null;
+    private ?\DateTimeImmutable $date = null;
+
 
     #[ORM\Column]
-    private ?int $numberOfPeople = null;
+    private ?int $seats = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
@@ -97,28 +98,6 @@ class Booking
         return $this;
     }
 
-    public function getReservationDate(): ?\DateTimeImmutable
-    {
-        return $this->reservationDate;
-    }
-
-    public function setReservationDate(?\DateTimeImmutable $reservationDate): static
-    {
-        $this->reservationDate = $reservationDate;
-        return $this;
-    }
-
-    public function getNumberOfPeople(): ?int
-    {
-        return $this->numberOfPeople;
-    }
-
-    public function setNumberOfPeople(?int $numberOfPeople): static
-    {
-        $this->numberOfPeople = $numberOfPeople;
-        return $this;
-    }
-
     public function getMessage(): ?string
     {
         return $this->message;
@@ -149,6 +128,28 @@ class Booking
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeImmutable
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTimeImmutable $date): static
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    public function getSeats(): ?int
+    {
+        return $this->seats;
+    }
+
+    public function setSeats(?int $seats): static
+    {
+        $this->seats = $seats;
         return $this;
     }
 

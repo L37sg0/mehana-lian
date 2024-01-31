@@ -123,31 +123,31 @@ class FrontController extends AbstractController
     #[Route('/book-a-table', name: 'book-a-table', defaults: ['includeInWebsiteMenu' => false])]
     public function bookTable(Request $request): Response
     {
-//        $booking = new Booking();
-//        $form = $this->createForm(BookingType::class, $booking);
-//        $form->handleRequest($request);
-//
-//        if ($form->isSubmitted() && $form->isValid()) {
-////            $booking->setName($name)
-//            $this->entityManager->persist($booking);
-//            $this->entityManager->flush();
-//
-//            $this->notifier->send(new Notification(
-//                t('Thank your for your booking. Our manager will review and confirm it to you soon.'),
-//                ['browser']
-//            ));
-//
-//            return $this->redirectToRoute('home');
-//        }
-//
-//        if ($form->isSubmitted()) {
-//            $this->notifier->send(new Notification(
-//                'Can you check your submission? There are some problems with it.',
-//                ['browser']
-//            ));
-//        }
+        $booking = new Booking();
+        $form = $this->createForm(BookingType::class, $booking);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+//            $booking->setDate($form->get('date'));
+            $this->entityManager->persist($booking);
+            $this->entityManager->flush();
+
+            $this->notifier->send(new Notification(
+                t('Thank your for your booking. Our manager will review and confirm it to you soon.'),
+                ['browser']
+            ));
+
+            return $this->redirectToRoute('home');
+        }
+
+        if ($form->isSubmitted()) {
+            $this->notifier->send(new Notification(
+                'Can you check your submission? There are some problems with it.',
+                ['browser']
+            ));
+        }
         return $this->render('front/pages/book-a-table.html.twig',[
-//            'form' => $form,
+            'form' => $form,
         ]);
     }
 
