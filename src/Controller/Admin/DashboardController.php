@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ApiIntegration;
+use App\Entity\Booking;
 use App\Entity\Image;
 use App\Entity\Menu;
 use App\Entity\Message;
@@ -38,10 +39,11 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToRoute('Back to Website', 'fas fa-home', 'home');
         yield MenuItem::linkToCrud('Images', 'fas fa-images', Image::class);
-        yield MenuItem::linkToCrud('Reviews', 'fas fa-comments', Review::class);
+        yield MenuItem::linkToCrud('Reviews', 'fas fa-star', Review::class);
         yield MenuItem::linkToCrud('Messages', 'fas fa-message', Message::class);
         yield MenuItem::linkToCrud('Menus', 'fas fa-utensils', Menu::class);
         yield MenuItem::linkToCrud('Plates', 'fas fa-plate-wheat', \App\Entity\MenuItem::class);
+        yield MenuItem::linkToCrud('Bookings', 'fas fa-book-bookmark', Booking::class);
     }
     
     public function configureUserMenu(UserInterface $user): UserMenu
