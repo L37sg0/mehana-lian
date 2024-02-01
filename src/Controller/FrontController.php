@@ -126,9 +126,7 @@ class FrontController extends AbstractController
         $booking = new Booking();
         $form = $this->createForm(BookingType::class, $booking);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-//            $booking->setDate($form->get('date'));
             $this->entityManager->persist($booking);
             $this->entityManager->flush();
 

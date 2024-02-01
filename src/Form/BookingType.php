@@ -47,12 +47,6 @@ class BookingType extends AbstractType
                     new NotBlank(null, t('Please pick a date for your reservation.')),
                 ],
             ])
-//            ->add('time', DateType::class, [
-//                'required' => true,
-//                'constraints' => [
-//                    new NotBlank(null, t('Please pick specific time for reservation.'))
-//                ],
-//            ])
             ->add('seats', IntegerType::class, [
                 'required' => true,
                 'constraints' => [
